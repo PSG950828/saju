@@ -465,6 +465,11 @@ export default function Home() {
   const isProd = process.env.NODE_ENV === "production";
   const apiBase = apiBaseFromEnv ?? (isProd ? "" : "http://localhost:8000");
 
+  const showDebug =
+    !isProd ||
+    (typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("debug") === "1");
+
   const fetchWithTimeout = async (
     input: RequestInfo,
     init: RequestInit,
@@ -839,22 +844,24 @@ export default function Home() {
         </button>
       </form>
 
-      <section className="notice" style={{ fontSize: 13, lineHeight: 1.5 }}>
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>진단</div>
-        <div>환경: {process.env.NODE_ENV}</div>
-        <div>
-          NEXT_PUBLIC_API_BASE: {apiBaseFromEnv ? apiBaseFromEnv : "(없음)"}
-        </div>
-        <div>사용 API Base: {apiBase ? apiBase : "(비어있음)"}</div>
-        <div>
-          마지막 요청: {lastRequestUrl ? lastRequestUrl : "(아직 없음)"}
-        </div>
-        <div>요청 시각: {lastRequestAt ? lastRequestAt : "-"}</div>
-        <div>
-          타임아웃: {lastRequestTimeoutMs ? `${lastRequestTimeoutMs}ms` : "-"}
-        </div>
-        <div>마지막 에러명: {lastErrorName ? lastErrorName : "-"}</div>
-      </section>
+      {showDebug && (
+        <section className="notice" style={{ fontSize: 13, lineHeight: 1.5 }}>
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>진단</div>
+          <div>환경: {process.env.NODE_ENV}</div>
+          <div>
+            NEXT_PUBLIC_API_BASE: {apiBaseFromEnv ? apiBaseFromEnv : "(없음)"}
+          </div>
+          <div>사용 API Base: {apiBase ? apiBase : "(비어있음)"}</div>
+          <div>
+            마지막 요청: {lastRequestUrl ? lastRequestUrl : "(아직 없음)"}
+          </div>
+          <div>요청 시각: {lastRequestAt ? lastRequestAt : "-"}</div>
+          <div>
+            타임아웃: {lastRequestTimeoutMs ? `${lastRequestTimeoutMs}ms` : "-"}
+          </div>
+          <div>마지막 에러명: {lastErrorName ? lastErrorName : "-"}</div>
+        </section>
+      )}
 
       {error && <div className="notice">{error}</div>}
 
