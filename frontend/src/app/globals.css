@@ -307,12 +307,39 @@ button {
   scroll-snap-align: start;
   white-space: nowrap;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .term-tag.active {
   background: var(--accent);
   color: #ffffff;
   border-color: var(--accent);
+}
+
+.strength-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.strength-chip.strong {
+  background: #2d3436;
+  color: #ffffff;
+}
+
+.strength-chip.normal {
+  background: #dfe6e9;
+  color: #2d3436;
+}
+
+.strength-chip.weak {
+  background: #f1f2f6;
+  color: #636e72;
 }
 
 .detail-preview {

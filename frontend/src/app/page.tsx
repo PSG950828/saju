@@ -68,10 +68,14 @@ type Guidance = {
 };
 
 type TenGodDetail = {
-  summary: string;
-  points: string[];
-  caution: string;
-  example: string;
+  highlight: string;
+  profile: string;
+  strengths: string[];
+  risks: string[];
+  relationship: string;
+  moneyWork: string;
+  stress: string;
+  growth: string;
   action: string;
 };
 
@@ -260,73 +264,113 @@ const tenGodEducation = [
 
 const tenGodDetails: Record<string, TenGodDetail> = {
   비견: {
-    summary: "비견은 ‘나와 같은 기운’이라 독립성과 경쟁심이 강해집니다.",
-    points: ["독립적 성향", "자기 주장 뚜렷", "혼자서도 잘하는 편"],
-    caution: "협업 시 충돌 가능, 고집이 강해질 수 있습니다.",
-    example: "업무에서 내 방식이 강할 때, 체크리스트로 합의하면 충돌이 줄어듭니다.",
-    action: "오늘은 혼자 집중할 일을 정하고, 협업은 역할을 분리해보세요.",
+    highlight: "비견 비중이 높으면 독립성과 주도성이 강한 흐름이 나타납니다.",
+    profile: "스스로 결정하고 책임지는 상황에서 에너지가 살아납니다. 혼자서도 안정적으로 움직이는 편입니다.",
+    strengths: ["결정이 빠름", "자립적인 실행", "위기에서도 흔들리지 않음"],
+    risks: ["의견 충돌", "타협을 늦게 함", "도움 요청을 미룸"],
+    relationship: "협업에서도 주도권을 잡는 편이라 역할 분담을 명확히 하면 갈등이 줄어듭니다.",
+    moneyWork: "혼자 진행하는 프로젝트나 개인 브랜드에서 성과가 잘 나옵니다.",
+    stress: "통제권이 없을 때 스트레스를 크게 느끼며, 혼자 해결하려는 경향이 강해집니다.",
+    growth: "협업 시 ‘합의 기준’을 먼저 정하면 에너지가 덜 소모됩니다.",
+    action: "오늘 중요한 결정 1개를 스스로 정하고, 공유가 필요한 부분만 체크리스트로 합의해보세요.",
   },
   겁재: {
-    summary: "겁재는 ‘도전과 추진’의 기운이 강하게 나타납니다.",
-    points: ["도전적", "즉흥적", "승부욕"],
-    caution: "무리한 선택을 하기 쉬워 속도 조절이 필요합니다.",
-    example: "새 프로젝트를 시작할 때 일정 여유를 두면 안정성이 올라갑니다.",
-    action: "결정을 하기 전 리스크 2가지를 메모해보세요.",
+    highlight: "겁재 비중이 높으면 도전과 추진의 에너지가 강하게 드러납니다.",
+    profile: "새로운 시도를 즐기며 승부욕이 강한 편입니다. 속도가 빠르지만 리듬 조절이 필요합니다.",
+    strengths: ["도전 정신", "추진력", "빠른 반응"],
+    risks: ["무리한 결정", "속도 과다", "계획 누락"],
+    relationship: "직선적인 표현이 많아 오해가 생기기 쉬우니 상황 설명을 덧붙이면 좋습니다.",
+    moneyWork: "성과를 빠르게 내는 작업에 강하지만, 리스크 관리를 같이 해야 안정적입니다.",
+    stress: "속도가 막히면 답답함을 크게 느끼며 즉흥적인 선택이 늘어납니다.",
+    growth: "속도보다 ‘안정 기준’을 먼저 정하면 장기적으로 성과가 커집니다.",
+    action: "오늘 결정할 일에 대해 리스크 2가지를 적고 시작해보세요.",
   },
   식신: {
-    summary: "식신은 ‘표현과 활동’의 기운이 자연스럽게 드러납니다.",
-    points: ["표현력", "활동성", "친화력"],
-    caution: "일이 많아질 때 에너지 소모가 커질 수 있습니다.",
-    example: "주간 일정에 휴식 시간을 고정해두면 지속력이 좋아집니다.",
-    action: "오늘 표현하고 싶은 메시지 1개를 기록해보세요.",
+    highlight: "식신 비중이 높으면 표현과 활동성이 자연스럽게 강조됩니다.",
+    profile: "몸으로 움직이고 말로 표현할 때 에너지가 살아나는 타입입니다.",
+    strengths: ["표현력", "활동성", "친화력"],
+    risks: ["일 과다", "에너지 소진", "일정 과포화"],
+    relationship: "사람들과 자연스럽게 어울리지만, 감정 표현이 강할 때 과열될 수 있습니다.",
+    moneyWork: "기획/콘텐츠/서비스처럼 ‘보이는 결과’를 만드는 일에 강합니다.",
+    stress: "활동량이 줄어들면 무기력감이 커질 수 있습니다.",
+    growth: "활동과 휴식을 함께 설계하면 지속력이 높아집니다.",
+    action: "오늘 전달하고 싶은 메시지 1개를 정해서 표현해보세요.",
   },
   상관: {
-    summary: "상관은 ‘창의와 돌파’ 성향이 강하게 나타납니다.",
-    points: ["창의적", "돌파력", "규칙 깨기"],
-    caution: "충동적으로 결정하지 않도록 기준을 만들어두세요.",
-    example: "아이디어를 실행하기 전 체크리스트 3가지를 점검하세요.",
-    action: "실행 전 ‘왜 필요한지’ 한 줄만 적어보세요.",
+    highlight: "상관 비중이 높으면 창의적 돌파 성향이 강하게 나타납니다.",
+    profile: "새로운 방식을 찾아내는 데 능하며 규칙을 넘어서는 시도가 많습니다.",
+    strengths: ["창의적 사고", "돌파력", "문제 해결 능력"],
+    risks: ["충동적 결정", "규칙 무시", "마무리 느슨"],
+    relationship: "직설적인 의견이 많아 조율이 필요합니다. 기준을 공유하면 협업이 부드러워집니다.",
+    moneyWork: "새로운 시도를 하는 업무에 강하지만, 완성도를 관리해야 합니다.",
+    stress: "제약이 많을수록 스트레스를 크게 느낍니다.",
+    growth: "아이디어를 실행 전 ‘필요성’ 기준으로 필터링하면 성과가 높아집니다.",
+    action: "오늘 아이디어 1개를 선택해 실행 기준을 3줄로 적어보세요.",
   },
   "편재": {
-    summary: "편재는 활동을 통해 재물을 얻는 성향입니다.",
-    points: ["사업 감각", "영업/투자 적성", "기회 포착 능력"],
-    caution: "돈의 흐름이 불안정할 수 있고 소비가 커질 수 있습니다.",
-    example: "수입과 지출을 주 1회 점검하면 안정성이 높아집니다.",
-    action: "오늘의 소비 1건을 기록해 흐름을 파악해보세요.",
+    highlight: "편재 비중이 높으면 ‘활동형 재물’ 흐름이 강합니다.",
+    profile: "움직이며 수익을 만드는 스타일이라 기회 포착이 빠릅니다.",
+    strengths: ["사업 감각", "기회 포착", "빠른 회전"],
+    risks: ["수입 변동", "지출 과다", "계획 부족"],
+    relationship: "사람을 넓게 만나며 정보 교류를 활발히 합니다.",
+    moneyWork: "영업/프로젝트/사업형 업무에서 성과가 좋습니다.",
+    stress: "성과가 즉시 보이지 않으면 불안감이 커집니다.",
+    growth: "수입과 지출의 리듬을 기록하면 안정감이 올라갑니다.",
+    action: "오늘 수입/지출 1건씩 기록해 흐름을 확인해보세요.",
   },
   정재: {
-    summary: "정재는 성실하게 쌓아 올리는 재물 성향입니다.",
-    points: ["계획적", "안정적", "저축형"],
-    caution: "새로운 기회를 놓칠 수 있어 작은 도전을 섞어보세요.",
-    example: "월 1회 작은 투자/학습을 시도하면 균형이 좋아집니다.",
+    highlight: "정재 비중이 높으면 안정적이고 축적형 재물 성향이 강합니다.",
+    profile: "계획적으로 쌓아가는 스타일이며 안정성을 중시합니다.",
+    strengths: ["계획성", "지속력", "안정 추구"],
+    risks: ["기회 놓침", "변화 회피", "속도 부족"],
+    relationship: "신뢰 기반 관계를 선호하며 약속을 잘 지키는 편입니다.",
+    moneyWork: "장기 프로젝트, 안정적인 직무에서 성과가 잘 나옵니다.",
+    stress: "예상 밖 변수가 생기면 불안감을 크게 느낍니다.",
+    growth: "작은 도전 계획을 섞으면 성장 속도가 빨라집니다.",
     action: "오늘의 지출/저축을 3줄로 정리해보세요.",
   },
   "편관(칠살)": {
-    summary: "편관은 도전과 결단의 기운이 강한 유형입니다.",
-    points: ["결단력", "승부욕", "위기 대응"],
-    caution: "속도만 빠르면 피로가 누적될 수 있습니다.",
-    example: "큰 결정을 할 때 하루 숙고 시간을 두세요.",
-    action: "중요한 결정을 하나 골라 24시간 숙고 규칙을 적용해보세요.",
+    highlight: "편관(칠살) 비중이 높으면 결단력과 긴장감이 강하게 나타납니다.",
+    profile: "위기 대응이 빠르고 승부를 걸 때 에너지가 상승합니다.",
+    strengths: ["결단력", "위기 대응", "승부욕"],
+    risks: ["피로 누적", "과열", "휴식 부족"],
+    relationship: "직접적인 표현이 많아 강하게 느껴질 수 있습니다.",
+    moneyWork: "성과 압박이 큰 업무에서 집중력이 강합니다.",
+    stress: "압박이 클수록 빠른 결정을 반복해 피로가 쌓입니다.",
+    growth: "결정 전에 1단계 점검을 넣으면 안정성이 높아집니다.",
+    action: "오늘 중요한 결정을 하나 골라 24시간 숙고 규칙을 적용해보세요.",
   },
   정관: {
-    summary: "정관은 책임과 안정의 성향이 강한 유형입니다.",
-    points: ["책임감", "규칙 준수", "신뢰"],
-    caution: "완벽함에 집착하면 스트레스가 커질 수 있습니다.",
-    example: "완벽보다 ‘충분히 좋은 기준’을 정해보세요.",
+    highlight: "정관 비중이 높으면 책임과 신뢰의 성향이 강하게 나타납니다.",
+    profile: "규칙을 지키며 안정적인 흐름을 만드는 데 능합니다.",
+    strengths: ["책임감", "규칙 준수", "신뢰 확보"],
+    risks: ["완벽주의", "자기검열", "속도 저하"],
+    relationship: "약속을 중시하며 안정적인 관계를 선호합니다.",
+    moneyWork: "정해진 프로세스를 지키는 업무에서 성과가 안정적으로 나옵니다.",
+    stress: "기준이 흔들리면 불안이 커집니다.",
+    growth: "완벽보다 ‘충분히 좋은 기준’을 세우면 에너지 소모가 줄어듭니다.",
     action: "오늘 기준을 하나 정하고, 80%만 채워도 완료로 처리해보세요.",
   },
   편인: {
-    summary: "편인은 직관과 분석 기운이 강한 유형입니다.",
-    points: ["분석력", "통찰", "깊은 사고"],
-    caution: "생각이 많아 실행이 늦어질 수 있습니다.",
-    example: "아이디어를 30분 안에 작은 행동으로 옮겨보세요.",
+    highlight: "편인 비중이 높으면 직관과 분석력이 강하게 나타납니다.",
+    profile: "깊게 생각하고 통찰하는 능력이 뛰어나며 분석을 즐깁니다.",
+    strengths: ["분석력", "통찰", "깊은 사고"],
+    risks: ["실행 지연", "과도한 고민", "결정 피로"],
+    relationship: "거리감을 유지하며 관찰하는 편이라 솔직한 표현이 필요합니다.",
+    moneyWork: "리서치, 분석, 기획 등 깊이 있는 업무에 강합니다.",
+    stress: "생각이 많아질수록 피로가 누적됩니다.",
+    growth: "생각을 행동으로 옮기는 작은 단계가 필요합니다.",
     action: "생각 중인 아이디어를 1단계 행동으로 쪼개보세요.",
   },
   정인: {
-    summary: "정인은 보호와 학습의 기운이 강한 유형입니다.",
-    points: ["학습력", "배려", "안정"],
-    caution: "안정만 추구하면 변화에 둔감해질 수 있습니다.",
-    example: "새로운 것을 월 1회 경험해보세요.",
+    highlight: "정인 비중이 높으면 보호와 학습 성향이 강하게 나타납니다.",
+    profile: "안정과 배움을 중시하며 안전한 환경에서 에너지가 살아납니다.",
+    strengths: ["학습력", "배려", "안정성"],
+    risks: ["변화 회피", "소극적 선택", "속도 저하"],
+    relationship: "상대의 감정을 잘 읽고 배려하지만, 표현은 조심스러운 편입니다.",
+    moneyWork: "지속적으로 쌓아가는 업무에서 성과가 잘 나옵니다.",
+    stress: "불확실성이 커지면 소극적으로 변할 수 있습니다.",
+    growth: "새로운 경험을 작은 단위로 넣어 변화 감각을 키우는 게 좋습니다.",
     action: "오늘은 새로운 정보를 1개만 더 공부해보세요.",
   },
 };
@@ -581,10 +625,22 @@ export default function Home() {
         new Set(pillarStems.map((stem) => getTenGod(dayStem, stem)))
       ).map((term) => {
         const base = tenGodEducation.find((item) => item.term === term);
+        const count = tenGodCounts[term] ?? 0;
+        const counts = Object.values(tenGodCounts);
+        const maxCount = counts.length ? Math.max(...counts) : count;
+        const minCount = counts.length ? Math.min(...counts) : count;
+        const strength =
+          count === maxCount
+            ? "strong"
+            : count === minCount || count <= 1
+              ? "weak"
+              : "normal";
         return {
           term,
           subtitle: base?.subtitle ?? "",
-          count: tenGodCounts[term] ?? 0,
+          strength,
+          strengthLabel:
+            strength === "strong" ? "강함" : strength === "weak" ? "약함" : "보통",
         };
       })
     : [];
@@ -601,10 +657,8 @@ export default function Home() {
   const selectedTenGodCount = selectedTenGod
     ? tenGodCounts[selectedTenGod] ?? 0
     : 0;
-  const tenGodInsight = selectedTenGod
-    ? `${selectedTenGod} 비중이 ${selectedTenGodCount}회로 ${
-        selectedTenGodCount >= 2 ? "두드러져" : "보이며"
-      } ${selectedTenGodDetail?.summary ?? ""}`
+  const tenGodInsight = selectedTenGodDetail
+    ? selectedTenGodDetail.highlight
     : "";
   const showRecovery =
     result?.element_score.status.water === "LOW" ||
@@ -839,7 +893,9 @@ export default function Home() {
                   >
                     {term.term}
                     {term.subtitle ? ` (${term.subtitle})` : ""}
-                    {term.count ? ` · ${term.count}` : ""}
+                    <span className={`strength-chip ${term.strength}`}>
+                      {term.strengthLabel}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -941,14 +997,19 @@ export default function Home() {
                     <h3>
                       {term.term} ({term.subtitle})
                     </h3>
-                    <p>{detail.summary}</p>
+                    <p>{detail.highlight}</p>
+                    <p>{detail.profile}</p>
                     <ul>
-                      {detail.points.map((point) => (
+                      {detail.strengths.map((point) => (
                         <li key={point}>• {point}</li>
                       ))}
                     </ul>
-                    <p>주의점: {detail.caution}</p>
-                    <p>생활 예시: {detail.example}</p>
+                    <p>관리 포인트: {detail.risks.join(" / ")}</p>
+                    <p>관계: {detail.relationship}</p>
+                    <p>돈/일: {detail.moneyWork}</p>
+                    <p>스트레스 반응: {detail.stress}</p>
+                    <p>성장 전략: {detail.growth}</p>
+                    <p>오늘 행동: {detail.action}</p>
                   </article>
                 );
               })}
@@ -999,17 +1060,28 @@ export default function Home() {
             </div>
             <div className="modal-body">
               <div className="modal-highlight">{tenGodInsight}</div>
+              <p>{selectedTenGodDetail.profile}</p>
               <div>
                 <strong>강점</strong>
                 <ul>
-                  {selectedTenGodDetail.points.map((point) => (
+                  {selectedTenGodDetail.strengths.map((point) => (
                     <li key={point}>✔ {point}</li>
                   ))}
                 </ul>
               </div>
-              <p>주의점: {selectedTenGodDetail.caution}</p>
-              <p>생활 예시: {selectedTenGodDetail.example}</p>
-              <p>오늘 추천 행동: {selectedTenGodDetail.action}</p>
+              <div>
+                <strong>리스크 / 관리 포인트</strong>
+                <ul>
+                  {selectedTenGodDetail.risks.map((point) => (
+                    <li key={point}>• {point}</li>
+                  ))}
+                </ul>
+              </div>
+              <p>대인관계 스타일: {selectedTenGodDetail.relationship}</p>
+              <p>돈 / 일 패턴: {selectedTenGodDetail.moneyWork}</p>
+              <p>스트레스 반응: {selectedTenGodDetail.stress}</p>
+              <p>성장 전략: {selectedTenGodDetail.growth}</p>
+              <p>즉시 실행 행동: {selectedTenGodDetail.action}</p>
             </div>
           </div>
         </div>
