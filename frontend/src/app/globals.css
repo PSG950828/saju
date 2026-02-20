@@ -142,39 +142,59 @@ button:disabled {
 }
 
 .term-tags {
-  display: grid;
+  /* 줄바꿈(가로 스크롤 금지) + 일정한 간격 */
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 14px;
 }
 
 .term-tag {
-  background: #ffffff;
-  border: 1px solid #eef0f1;
+  /* 텍스트 길이에 따라 자연스럽게 늘어나고, 필요 시 내부에서 줄바꿈 */
+  background: #f6f7f8;
+  border: 1px solid #e7e9ec;
   color: var(--text);
-  padding: 12px 14px;
-  border-radius: 14px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  display: inline-flex;
   align-items: center;
+  gap: 10px;
   text-align: left;
+  width: fit-content;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .term-tag.active {
-  border-color: rgba(108, 92, 231, 0.55);
-  box-shadow: 0 10px 26px rgba(108, 92, 231, 0.14);
+  /* 고채도 단색 배경 금지: 연한 보라 + 테두리/그림자로 선택감만 부여 */
+  background: rgba(108, 92, 231, 0.10);
+  border-color: rgba(108, 92, 231, 0.30);
+  box-shadow: 0 6px 18px rgba(27, 31, 36, 0.10);
 }
 
 .term-title {
   font-weight: 750;
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.25;
+  /* 긴 문장 잘림 방지 */
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.term-tag.active .term-title {
+  color: #2b1fd4;
 }
 
 .term-subtitle {
-  grid-column: 1 / -1;
-  margin-top: -2px;
   font-size: 13px;
   color: var(--muted);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.term-tag.active .term-subtitle {
+  color: rgba(43, 31, 212, 0.85);
 }
 
 .strength-chip {
@@ -182,6 +202,7 @@ button:disabled {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 750;
+  flex: 0 0 auto;
 }
 
 .strength-chip.strong {

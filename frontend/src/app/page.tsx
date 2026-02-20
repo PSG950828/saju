@@ -1006,12 +1006,12 @@ export default function Home() {
                     <span className="term-title">
                       {term.term} — {term.strengthLabel}
                     </span>
-                    {term.subtitle ? (
-                      <span className="term-subtitle">{term.subtitle}</span>
-                    ) : null}
                     <span className={`strength-chip ${term.strength}`}>
                       {term.strengthLabel}
                     </span>
+                    {term.subtitle ? (
+                      <span className="term-subtitle">{term.subtitle}</span>
+                    ) : null}
                   </button>
                 ))}
               </div>

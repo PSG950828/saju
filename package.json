@@ -1,0 +1,11 @@
+{
+  "name": "saju",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev -- --port 3001",
+    "dev:backend": "cd backend && PYTHONPATH=$PWD /Users/psg/saju/.venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "dev": "node scripts/dev.mjs",
+    "stop": "node scripts/stop.mjs",
+    "build": "cd frontend && npm run build"
+  }
+}
