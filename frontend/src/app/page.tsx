@@ -448,6 +448,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [lastRequestUrl, setLastRequestUrl] = useState<string | null>(null);
+  const [lastRequestAt, setLastRequestAt] = useState<string | null>(null);
+  const [lastRequestTimeoutMs, setLastRequestTimeoutMs] = useState<number | null>(null);
+  const [lastErrorName, setLastErrorName] = useState<string | null>(null);
   const [unknownTime, setUnknownTime] = useState(false);
   const [original, setOriginal] = useState<OriginalResponse | null>(null);
   const [originalLoading, setOriginalLoading] = useState(false);
@@ -461,15 +465,26 @@ export default function Home() {
   const isProd = process.env.NODE_ENV === "production";
   const apiBase = apiBaseFromEnv ?? (isProd ? "" : "http://localhost:8000");
 
-  const fetchWithTimeout = async (input: RequestInfo, init: RequestInit) => {
+  const fetchWithTimeout = async (
+    input: RequestInfo,
+    init: RequestInit,
+    timeoutMs = 10000
+  ) => {
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+    const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       return await fetch(input, { ...init, signal: controller.signal });
     } finally {
       window.clearTimeout(timeoutId);
     }
+  };
+
+  const beginRequestTrace = (url: string, timeoutMs: number) => {
+    setLastRequestUrl(url);
+    setLastRequestTimeoutMs(timeoutMs);
+    setLastRequestAt(new Date().toISOString());
+    setLastErrorName(null);
   };
 
   const handleChange = (key: string, value: string | boolean) => {
@@ -479,6 +494,7 @@ export default function Home() {
   const handleOriginal = async () => {
     setOriginalLoading(true);
     setOriginalError(null);
+    setLastErrorName(null);
 
     if (!apiBase) {
       setOriginalError(
@@ -494,11 +510,19 @@ export default function Home() {
         birth_time: unknownTime ? null : form.birth_time,
       };
 
-      const response = await fetchWithTimeout(`${apiBase}/api/original`, {
+      const url = `${apiBase}/api/original`;
+      const timeoutMs = 20000;
+      beginRequestTrace(url, timeoutMs);
+
+      const response = await fetchWithTimeout(
+        url,
+        {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      });
+        },
+        timeoutMs
+      );
 
       if (!response.ok) {
         const payload = await response.json();
@@ -509,8 +533,10 @@ export default function Home() {
       setOriginal(data);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
+        setLastErrorName(err.name);
         setOriginalError("서버 응답이 지연되고 있어요. 백엔드 실행 상태를 확인해 주세요.");
       } else {
+        setLastErrorName(err instanceof Error ? err.name : "UnknownError");
         setOriginalError(err instanceof Error ? err.message : "알 수 없는 오류");
       }
     } finally {
@@ -522,6 +548,8 @@ export default function Home() {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setLastErrorName(null);
+    setResult(null);
 
     if (!apiBase) {
       setError(
@@ -537,11 +565,19 @@ export default function Home() {
         birth_time: unknownTime ? null : form.birth_time,
       };
 
-      const response = await fetchWithTimeout(`${apiBase}/api/analysis`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const url = `${apiBase}/api/analysis`;
+      const timeoutMs = 30000;
+      beginRequestTrace(url, timeoutMs);
+
+      const response = await fetchWithTimeout(
+        url,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+        timeoutMs
+      );
 
       if (!response.ok) {
         const payload = await response.json();
@@ -554,14 +590,17 @@ export default function Home() {
       await handleOriginal();
     } catch (err) {
       if (err instanceof TypeError) {
+        setLastErrorName(err.name);
         setError(
           `네트워크 오류로 요청이 실패했어요. (API: ${apiBase}) 운영 백엔드 접근/도메인 설정을 확인해 주세요.`
         );
         return;
       }
       if (err instanceof DOMException && err.name === "AbortError") {
+        setLastErrorName(err.name);
         setError("서버 응답이 지연되고 있어요. 백엔드 실행 상태를 확인해 주세요.");
       } else {
+        setLastErrorName(err instanceof Error ? err.name : "UnknownError");
         setError(err instanceof Error ? err.message : "알 수 없는 오류");
       }
     } finally {
@@ -799,6 +838,23 @@ export default function Home() {
           {originalLoading ? "원문 생성 중..." : "📜 내 사주 원문 보기"}
         </button>
       </form>
+
+      <section className="notice" style={{ fontSize: 13, lineHeight: 1.5 }}>
+        <div style={{ fontWeight: 700, marginBottom: 6 }}>진단</div>
+        <div>환경: {process.env.NODE_ENV}</div>
+        <div>
+          NEXT_PUBLIC_API_BASE: {apiBaseFromEnv ? apiBaseFromEnv : "(없음)"}
+        </div>
+        <div>사용 API Base: {apiBase ? apiBase : "(비어있음)"}</div>
+        <div>
+          마지막 요청: {lastRequestUrl ? lastRequestUrl : "(아직 없음)"}
+        </div>
+        <div>요청 시각: {lastRequestAt ? lastRequestAt : "-"}</div>
+        <div>
+          타임아웃: {lastRequestTimeoutMs ? `${lastRequestTimeoutMs}ms` : "-"}
+        </div>
+        <div>마지막 에러명: {lastErrorName ? lastErrorName : "-"}</div>
+      </section>
 
       {error && <div className="notice">{error}</div>}
 
