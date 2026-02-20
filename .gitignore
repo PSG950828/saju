@@ -13,3 +13,5 @@ backend/.pytest_cache/
 .vscode/
 .env
 .env.*
+.autobackup.log
+.autobackup.err
