@@ -79,6 +79,15 @@ type TenGodDetail = {
   action: string;
 };
 
+type TenGodStrength = "strong" | "normal" | "weak";
+
+type TenGodTag = {
+  term: string;
+  subtitle: string;
+  strength: TenGodStrength;
+  strengthLabel: "강함" | "보통" | "약함";
+};
+
 const defaultForm = {
   name: "",
   birth_date: "1990-05-17",
@@ -456,10 +465,23 @@ export default function Home() {
   const [original, setOriginal] = useState<OriginalResponse | null>(null);
   const [originalLoading, setOriginalLoading] = useState(false);
   const [originalError, setOriginalError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<"analysis" | "glossary">("analysis");
+  const [activeView, setActiveView] = useState<"analysis" | "terms">("analysis");
   const [activeTenGod, setActiveTenGod] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const termsSectionRef = useRef<HTMLElement | null>(null);
+
+  const openTenGodModal = (term: string) => {
+    setActiveTenGod(term);
+    setIsModalOpen(true);
+  };
+
+  const goToAllTerms = () => {
+    setActiveView("terms");
+    window.requestAnimationFrame(() => {
+      termsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
 
   const apiBaseFromEnv = process.env.NEXT_PUBLIC_API_BASE;
   const isProd = process.env.NODE_ENV === "production";
@@ -621,17 +643,8 @@ export default function Home() {
 
     document.body.style.overflow = "hidden";
     modalRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsModalOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isModalOpen]);
 
@@ -688,33 +701,37 @@ export default function Home() {
           return acc;
         }, {})
     : {};
-  const tenGodTags = dayStem
-    ? Array.from(
-        new Set(pillarStems.map((stem) => getTenGod(dayStem, stem)))
-      ).map((term) => {
-        const base = tenGodEducation.find((item) => item.term === term);
-        const count = tenGodCounts[term] ?? 0;
-        const counts = Object.values(tenGodCounts);
-        const maxCount = counts.length ? Math.max(...counts) : count;
-        const minCount = counts.length ? Math.min(...counts) : count;
-        const strength =
-          count === maxCount
-            ? "strong"
-            : count === minCount || count <= 1
-              ? "weak"
-              : "normal";
-        return {
-          term,
-          subtitle: base?.subtitle ?? "",
-          strength,
-          strengthLabel:
-            strength === "strong" ? "강함" : strength === "weak" ? "약함" : "보통",
-        };
-      })
+  const tenGodTags: TenGodTag[] = dayStem
+    ? Array.from(new Set(pillarStems.map((stem) => getTenGod(dayStem, stem))))
+        .filter((term) => Boolean(tenGodDetails[term]))
+        .map((term) => {
+          const base = tenGodEducation.find((item) => item.term === term);
+          const count = tenGodCounts[term] ?? 0;
+          const counts = Object.values(tenGodCounts);
+          const maxCount = counts.length ? Math.max(...counts) : count;
+          const minCount = counts.length ? Math.min(...counts) : count;
+          const strength: TenGodStrength =
+            count === maxCount
+              ? "strong"
+              : count === minCount || count <= 1
+                ? "weak"
+                : "normal";
+          return {
+            term,
+            subtitle: base?.subtitle ?? "",
+            strength,
+            strengthLabel:
+              strength === "strong" ? "강함" : strength === "weak" ? "약함" : "보통",
+          };
+        })
     : [];
-  const primaryTenGod = Object.entries(tenGodCounts).sort(
-    (a, b) => b[1] - a[1]
-  )[0]?.[0];
+  const primaryTenGod = tenGodTags.length
+    ? tenGodTags
+        .slice()
+        .sort(
+          (a, b) => (tenGodCounts[b.term] ?? 0) - (tenGodCounts[a.term] ?? 0)
+        )[0]?.term
+    : null;
   const selectedTenGod = activeTenGod ?? tenGodTags[0]?.term ?? null;
   const selectedTenGodDetail = selectedTenGod
     ? tenGodDetails[selectedTenGod]
@@ -883,13 +900,6 @@ export default function Home() {
             >
               결과 요약
             </button>
-            <button
-              type="button"
-              className={`tab ${activeView === "glossary" ? "active" : ""}`}
-              onClick={() => setActiveView("glossary")}
-            >
-              용어 사전
-            </button>
           </div>
 
           {activeView === "analysis" && (
@@ -962,7 +972,23 @@ export default function Home() {
               <div className="balance-text">⚖ 균형 상태: {balanceHint}</div>
 
               {primaryTenGod && (
-                <div className="summary-focus">현재 핵심 기운: {primaryTenGod}</div>
+                <div className="summary-focus">
+                  <button
+                    type="button"
+                    className="focus-link"
+                    onClick={() => openTenGodModal(primaryTenGod)}
+                  >
+                    현재 핵심 기운: {primaryTenGod}
+                  </button>
+                  <button
+                    type="button"
+                    className="focus-info"
+                    aria-label="현재 핵심 기운 설명 보기"
+                    onClick={() => openTenGodModal(primaryTenGod)}
+                  >
+                    ⓘ
+                  </button>
+                </div>
               )}
 
               <div className="term-tags">
@@ -974,12 +1000,15 @@ export default function Home() {
                       selectedTenGod === term.term ? "active" : ""
                     }`}
                     onClick={() => {
-                      setActiveTenGod(term.term);
-                      setIsModalOpen(true);
+                      openTenGodModal(term.term);
                     }}
                   >
-                    {term.term}
-                    {term.subtitle ? ` (${term.subtitle})` : ""}
+                    <span className="term-title">
+                      {term.term} — {term.strengthLabel}
+                    </span>
+                    {term.subtitle ? (
+                      <span className="term-subtitle">{term.subtitle}</span>
+                    ) : null}
                     <span className={`strength-chip ${term.strength}`}>
                       {term.strengthLabel}
                     </span>
@@ -1071,57 +1100,87 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+
+              <div className="section" style={{ marginTop: 18 }}>
+                <button
+                  type="button"
+                  className="primary"
+                  onClick={goToAllTerms}
+                >
+                  용어 전체 보기
+                </button>
+              </div>
             </>
           )}
 
-          {activeView === "glossary" && (
-            <section className="card-grid" style={{ marginTop: 12 }}>
-              {tenGodEducation.map((term) => {
-                const detail = tenGodDetails[term.term];
-                if (!detail) return null;
-                return (
-                  <article key={term.term} className="card">
+          {activeView === "terms" && (
+            <section
+              className="section"
+              ref={termsSectionRef}
+              aria-label="용어 전체 목록"
+              style={{ marginTop: 12 }}
+            >
+              <div className="report-header" style={{ marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 700 }}>용어 전체 보기</div>
+                  <div style={{ fontSize: 13, color: "#636e72" }}>
+                    용어를 클릭하면 설명 모달이 열립니다.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="tab"
+                  onClick={() => setActiveView("analysis")}
+                >
+                  결과로 돌아가기
+                </button>
+              </div>
+
+              <div className="card-grid">
+                {tenGodEducation
+                  .filter((term) => Boolean(tenGodDetails[term.term]))
+                  .map((term) => (
+                    <button
+                      key={term.term}
+                      type="button"
+                      className="term-card"
+                      onClick={() => openTenGodModal(term.term)}
+                    >
+                      <div className="term-card-title">{term.term}</div>
+                      <div className="term-card-subtitle">{term.subtitle}</div>
+                      <div className="term-card-cta">설명 보기</div>
+                    </button>
+                  ))}
+
+                {termDictionary.map((term) => (
+                  <article key={term.title} className="card">
                     <h3>
-                      {term.term} ({term.subtitle})
+                      {term.title} ({term.subtitle})
                     </h3>
-                    <p>{detail.highlight}</p>
-                    <p>{detail.profile}</p>
+                    <p>{term.description}</p>
                     <ul>
-                      {detail.strengths.map((point) => (
+                      {term.points.map((point) => (
                         <li key={point}>• {point}</li>
                       ))}
                     </ul>
-                    <p>관리 포인트: {detail.risks.join(" / ")}</p>
-                    <p>관계: {detail.relationship}</p>
-                    <p>돈/일: {detail.moneyWork}</p>
-                    <p>스트레스 반응: {detail.stress}</p>
-                    <p>성장 전략: {detail.growth}</p>
-                    <p>오늘 행동: {detail.action}</p>
+                    <p>주의점: {term.caution}</p>
+                    <p>생활 예시: {term.example}</p>
                   </article>
-                );
-              })}
-              {termDictionary.map((term) => (
-                <article key={term.title} className="card">
-                  <h3>
-                    {term.title} ({term.subtitle})
-                  </h3>
-                  <p>{term.description}</p>
-                  <ul>
-                    {term.points.map((point) => (
-                      <li key={point}>• {point}</li>
-                    ))}
-                  </ul>
-                  <p>주의점: {term.caution}</p>
-                  <p>생활 예시: {term.example}</p>
-                </article>
-              ))}
+                ))}
+              </div>
             </section>
           )}
         </section>
       )}
 
       {isModalOpen && selectedTenGodDetail && (
-        <div className="modal-overlay" role="presentation">
+        <div
+          className="modal-overlay"
+          role="presentation"
+          onClick={() => {
+            // 배경 클릭으로 닫히지 않도록 (요구사항)
+          }}
+        >
           <div
             className="modal"
             role="dialog"
@@ -1129,6 +1188,7 @@ export default function Home() {
             aria-label="십성 상세"
             ref={modalRef}
             tabIndex={-1}
+            onClick={(event) => event.stopPropagation()}
           >
             <div className="modal-header sticky">
               <div>
