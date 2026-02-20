@@ -457,7 +457,9 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+  const apiBaseFromEnv = process.env.NEXT_PUBLIC_API_BASE;
+  const isProd = process.env.NODE_ENV === "production";
+  const apiBase = apiBaseFromEnv ?? (isProd ? "" : "http://localhost:8000");
 
   const fetchWithTimeout = async (input: RequestInfo, init: RequestInit) => {
     const controller = new AbortController();
@@ -477,6 +479,14 @@ export default function Home() {
   const handleOriginal = async () => {
     setOriginalLoading(true);
     setOriginalError(null);
+
+    if (!apiBase) {
+      setOriginalError(
+        "배포 설정이 아직 반영되지 않았어요. 잠시 후 새로고침하거나, 운영 환경변수(NEXT_PUBLIC_API_BASE)와 재배포 상태를 확인해 주세요."
+      );
+      setOriginalLoading(false);
+      return;
+    }
 
     try {
       const payload = {
@@ -513,6 +523,14 @@ export default function Home() {
     setLoading(true);
     setError(null);
 
+    if (!apiBase) {
+      setError(
+        "배포 설정이 아직 반영되지 않았어요. 잠시 후 새로고침하거나, 운영 환경변수(NEXT_PUBLIC_API_BASE)와 재배포 상태를 확인해 주세요."
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
       const payload = {
         ...form,
@@ -535,6 +553,12 @@ export default function Home() {
       setActiveView("analysis");
       await handleOriginal();
     } catch (err) {
+      if (err instanceof TypeError) {
+        setError(
+          `네트워크 오류로 요청이 실패했어요. (API: ${apiBase}) 운영 백엔드 접근/도메인 설정을 확인해 주세요.`
+        );
+        return;
+      }
       if (err instanceof DOMException && err.name === "AbortError") {
         setError("서버 응답이 지연되고 있어요. 백엔드 실행 상태를 확인해 주세요.");
       } else {
