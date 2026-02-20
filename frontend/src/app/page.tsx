@@ -996,9 +996,7 @@ export default function Home() {
                   <button
                     key={term.term}
                     type="button"
-                    className={`term-tag ${
-                      selectedTenGod === term.term ? "active" : ""
-                    }`}
+                    className="term-tag"
                     onClick={() => {
                       openTenGodModal(term.term);
                     }}
