@@ -150,9 +150,9 @@ button:disabled {
 }
 
 .term-tag {
-  /* 텍스트 길이에 따라 자연스럽게 늘어나고, 필요 시 내부에서 줄바꿈 */
-  background: #f6f7f8;
-  border: 1px solid #e7e9ec;
+  /* 결과 리포트용 정보 태그: 버튼 느낌 제거 */
+  background: rgba(27, 31, 36, 0.04);
+  border: 1px solid rgba(27, 31, 36, 0.06);
   color: var(--text);
   padding: 10px 12px;
   min-height: 44px;
@@ -164,13 +164,8 @@ button:disabled {
   width: fit-content;
   max-width: 100%;
   white-space: normal;
-}
-
-.term-tag.active {
-  /* 고채도 단색 배경 금지: 연한 보라 + 테두리/그림자로 선택감만 부여 */
-  background: rgba(108, 92, 231, 0.06);
-  border-color: rgba(108, 92, 231, 0.22);
-  box-shadow: 0 2px 8px rgba(27, 31, 36, 0.06);
+  cursor: default;
+  box-shadow: none;
 }
 
 .term-title {
@@ -182,9 +177,6 @@ button:disabled {
   word-break: keep-all;
 }
 
-.term-tag.active .term-title {
-  color: rgba(49, 38, 161, 0.95);
-}
 
 .term-subtitle {
   font-size: 13px;
@@ -194,16 +186,13 @@ button:disabled {
   word-break: keep-all;
 }
 
-.term-tag.active .term-subtitle {
-  color: rgba(49, 38, 161, 0.78);
-}
 
 .term-tag:hover {
   filter: brightness(0.99);
 }
 
 .term-tag:focus-visible {
-  outline: 2px solid rgba(108, 92, 231, 0.22);
+  outline: 2px solid rgba(27, 31, 36, 0.18);
   outline-offset: 3px;
 }
 
@@ -241,21 +230,8 @@ button:disabled {
   gap: 6px;
 }
 
-.term-card-title {
-  font-weight: 800;
-  font-size: 16px;
-}
-
-.term-card-subtitle {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.term-card-cta {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent);
+.term-subtitle {
+  display: none;
 }
 
 .modal-overlay {
@@ -267,6 +243,37 @@ button:disabled {
   justify-content: center;
   padding: 24px;
   z-index: 50;
+.term-info {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 31, 36, 0.10);
+  background: rgba(255, 255, 255, 0.75);
+  color: rgba(27, 31, 36, 0.75);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 0;
+  cursor: pointer;
+}
+
+.term-info:hover {
+  filter: brightness(0.99);
+}
+
+.term-info:active {
+  transform: translateY(0.5px);
+}
+
+.term-info:focus-visible {
+  outline: 2px solid rgba(27, 31, 36, 0.18);
+  outline-offset: 2px;
+}
+
+/* 과거 버전 호환: 만약 남아있어도 화면에 보이지 않게 */
+.strength-chip {
+  display: none;
+}
 }
 
 .modal {

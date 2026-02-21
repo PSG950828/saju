@@ -993,24 +993,20 @@ export default function Home() {
 
               <div className="term-tags">
                 {tenGodTags.map((term) => (
-                  <button
-                    key={term.term}
-                    type="button"
-                    className="term-tag"
-                    onClick={() => {
-                      openTenGodModal(term.term);
-                    }}
-                  >
+                  <div key={term.term} className="term-tag">
                     <span className="term-title">
                       {term.term} — {term.strengthLabel}
+                      {term.subtitle ? ` · ${term.subtitle}` : ""}
                     </span>
-                    <span className={`strength-chip ${term.strength}`}>
-                      {term.strengthLabel}
-                    </span>
-                    {term.subtitle ? (
-                      <span className="term-subtitle">{term.subtitle}</span>
-                    ) : null}
-                  </button>
+                    <button
+                      type="button"
+                      className="term-info"
+                      aria-label={`${term.term} 설명 보기`}
+                      onClick={() => openTenGodModal(term.term)}
+                    >
+                      ⓘ
+                    </button>
+                  </div>
                 ))}
               </div>
 
