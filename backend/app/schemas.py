@@ -37,6 +37,8 @@ class ElementScore(BaseModel):
 
 class AnalysisResponse(BaseModel):
     chart: Chart
+    month_pillars: Optional[List[Pillar]] = None
+    month_uncertain: bool = False
     hidden_stems: Dict[str, List[Tuple[str, float]]]
     element_score: ElementScore
     summary: Dict[str, str]
@@ -66,5 +68,7 @@ class OriginalResponse(BaseModel):
     name: str
     birth_date: str
     birth_time: str
+    month_pillars: Optional[List[Pillar]] = None
+    month_uncertain: bool = False
     pillars: Dict[str, Optional[OriginalPillar]]
     raw_text: str

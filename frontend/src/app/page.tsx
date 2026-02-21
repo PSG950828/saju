@@ -15,6 +15,8 @@ type AnalysisResponse = {
     day_pillar: { stem: string; branch: string };
     hour_pillar?: { stem: string; branch: string } | null;
   };
+  month_pillars?: { stem: string; branch: string }[] | null;
+  month_uncertain?: boolean;
   element_score: {
     elements_raw: Record<string, number>;
     elements_norm: Record<string, number>;
@@ -1682,6 +1684,10 @@ export default function Home() {
                 ].map((item) => {
                   const pillar = original?.pillars[item.key as keyof OriginalResponse["pillars"]];
                   const isMissing = item.key === "hour" && !pillar;
+                  const monthCandidates =
+                    item.key === "month" && result?.month_pillars && result.month_pillars.length > 1
+                      ? result.month_pillars
+                      : null;
                   return (
                     <article key={item.label} className="pillar-card">
                       <div className="pillar-meta">{item.label}</div>
@@ -1704,6 +1710,13 @@ export default function Home() {
                       {isMissing && (
                         <div className="pillar-meta">
                           시간 정보가 없어 시주 해석은 제외됩니다
+                        </div>
+                      )}
+
+                      {monthCandidates && (
+                        <div className="pillar-meta" style={{ marginTop: 8 }}>
+                          출생시간 미상 + 절기 경계일로 월주가 2개 후보입니다: {" "}
+                          {monthCandidates.map((p) => `${p.stem}${p.branch}`).join(" / ")}
                         </div>
                       )}
                     </article>

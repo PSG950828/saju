@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional, Tuple
+
+from .solar_terms import (
+    find_junggi_crossings_for_kst_date,
+    find_last_junggi_before_kst,
+)
 
 STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
 BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
@@ -67,6 +72,22 @@ BRANCH_WEIGHTS = {
 ELEMENTS = ["wood", "fire", "earth", "metal", "water"]
 
 
+def _normalize_timezone(timezone: Optional[str]) -> Tuple[str, Optional[str]]:
+    """현재 구현은 KST(Asia/Seoul) 기준으로만 정확도를 보장합니다.
+
+    반환:
+    - tz: 사용할 timezone 문자열(항상 Asia/Seoul)
+    - warning: 지원하지 않는 tz가 들어온 경우 경고 메시지
+    """
+
+    if not timezone:
+        return "Asia/Seoul", None
+    tz = timezone.strip()
+    if tz == "Asia/Seoul":
+        return tz, None
+    return "Asia/Seoul", f"timezone={tz}은(는) 현재 미지원이라 KST(Asia/Seoul)로 계산했습니다"
+
+
 def _normalize_calendar_type(value: Optional[str]) -> str:
     if not value:
         return "SOLAR"
@@ -125,10 +146,16 @@ class OriginalResult:
     raw_text: str
 
 
+# 전통 만세력과 일주(일간/일지)를 맞추기 위한 보정 오프셋.
+# 현재 구현은 첨부 샘플(1995-08-28 05:30 KST)에서 만세력 일주(辛卯)에 맞추기 위해
+# 기준일 기반 인덱스에 -20을 적용합니다.
+DAY_SEXAGENARY_OFFSET = -20
+
+
 def _sexagenary_index_for_day(target: date) -> int:
     reference = date(1900, 1, 31)
     delta = (target - reference).days
-    return delta % 60
+    return (delta + DAY_SEXAGENARY_OFFSET) % 60
 
 
 def _year_index(target: date) -> int:
@@ -138,6 +165,114 @@ def _year_index(target: date) -> int:
 
 def _month_index(target: date) -> int:
     return target.month
+
+
+def _month_branch_index_from_solar_term_month(month_index_1_to_12: int) -> int:
+    """절기월 인덱스(寅월=1 .. 丑월=12)를 지지 인덱스(0..11)로 변환."""
+
+    # 寅(2)부터 시작
+    return (2 + (month_index_1_to_12 - 1)) % 12
+
+
+def _solar_term_month_index_for_kst_datetime(dt_kst: datetime) -> int:
+    """KST 기준 시각이 속한 절기월(寅월=1)을 반환.
+
+    구현(정책 C 핵심):
+    - 해당 KST 날짜 안에 절기 경계(15° 격자) 통과가 있으면,
+      경계 시각 이전/이후에 따라 절기월이 바뀔 수 있음.
+    - 여기서는 '그 날짜에서 가장 이른 절기 경계'를 찾고,
+      dt_kst가 경계 이전이면 전날의 절기월을 그대로,
+      경계 이후면 경계 이후 절기월을 사용합니다.
+
+    참고:
+    - 절기월의 기준은 입춘(315°)을 寅월 시작으로 둡니다.
+    """
+
+    # 내부 절기 계산은 KST offset-aware datetime을 사용하므로, 입력도 통일
+    if dt_kst.tzinfo is None:
+        from .solar_terms import KST  # local import to avoid circular
+
+        dt_kst = dt_kst.replace(tzinfo=KST)
+
+    crossings = find_junggi_crossings_for_kst_date(dt_kst.date())
+    crossings = sorted(crossings, key=lambda c: c.when_kst)
+
+    if not crossings:
+        last = find_last_junggi_before_kst(dt_kst)
+        if not last:
+            # de421 범위 밖 등 예외 케이스: 최후의 폴백
+            return ((dt_kst.month - 1) % 12) + 1
+
+        term_long = last.target_longitude_deg
+        # 12중기 기준: 30° 격자(k*30). 우수 330°를 寅월 시작으로 둡니다.
+        k30 = int(round((term_long % 360.0) / 30.0))
+        month_index = ((k30 - 11) % 12) + 1  # k30=11(330°)=1(寅)
+        return month_index
+
+    boundary = crossings[0].when_kst
+    term_long = crossings[0].target_longitude_deg
+    k30 = int(round((term_long % 360.0) / 30.0))
+    month_index = ((k30 - 11) % 12) + 1
+
+    if dt_kst < boundary:
+        # 경계 이전이면 이전 달로
+        month_index = ((month_index - 2) % 12) + 1
+
+    return month_index
+
+
+def calculate_month_pillars_policy_c(
+    birth_date: date,
+    birth_time: Optional[str],
+    year_stem_index: int,
+    *,
+    timezone: str = "Asia/Seoul",
+) -> Tuple[List[Pillar], bool]:
+    """절기월 기반 월주를 계산하고, 시간 미상 정책 C에 따라 후보를 반환합니다.
+
+    반환:
+    - month_pillars: 후보 월주 리스트(1개 또는 2개)
+    - month_uncertain: 후보가 2개면 True
+
+    정책 C:
+    - 출생시간 미상(birth_time=None) AND 해당 KST 날짜에 절기 경계가 존재하면
+      경계 이전/이후 두 월주 후보를 반환합니다.
+    """
+
+    if timezone != "Asia/Seoul":
+        # 현재는 KST 고정 구현(요구사항의 중심).
+        # 타임존 확장은 후속으로 진행.
+        pass
+
+    crossings = find_junggi_crossings_for_kst_date(birth_date)
+    has_boundary = len(crossings) > 0
+
+    # birth_time이 있으면 단일 시각으로 절기월 판정
+    def pillar_for_month_index(month_index_1_to_12: int) -> Pillar:
+        branch = BRANCHES[_month_branch_index_from_solar_term_month(month_index_1_to_12)]
+        stem = STEMS[_month_stem_index(year_stem_index, month_index_1_to_12)]
+        return Pillar(stem=stem, branch=branch)
+
+    if birth_time:
+        hour, minute = [int(x) for x in birth_time.split(":")[:2]]
+        dt_kst = datetime(birth_date.year, birth_date.month, birth_date.day, hour, minute, 0)
+        month_index = _solar_term_month_index_for_kst_datetime(dt_kst)
+        return [pillar_for_month_index(month_index)], False
+
+    if not has_boundary:
+        # 경계가 없는 날이면 단일 후보
+        month_index = birth_date.month
+        # TODO: 경계 없는 날의 절기월 판정(가장 최근 중기 추적)은 후속으로 개선
+        month_index = ((month_index - 1) % 12) + 1
+        return [pillar_for_month_index(month_index)], False
+
+    # 경계가 있는 날 + 시간 미상: 후보 2개(경계 전/후)
+    boundary = sorted(crossings, key=lambda c: c.when_kst)[0].when_kst
+    before_dt = boundary - timedelta(seconds=1)
+    after_dt = boundary + timedelta(seconds=1)
+    before_month = _solar_term_month_index_for_kst_datetime(before_dt)
+    after_month = _solar_term_month_index_for_kst_datetime(after_dt)
+    return [pillar_for_month_index(before_month), pillar_for_month_index(after_month)], True
 
 
 def _stem_branch_from_index(index: int) -> Pillar:
@@ -153,7 +288,35 @@ def _hour_branch_index(hour: int) -> int:
 
 
 def _month_stem_index(year_stem_index: int, month_index: int) -> int:
-    return (year_stem_index * 2 + month_index) % 10
+    """전통 만세력 월간 산출(오호둔, 五虎遁) 기반.
+
+    month_index: 절기월 인덱스(寅월=1 .. 丑월=12)
+
+    규칙(연간 -> 寅월 월간):
+    - 甲/己 -> 丙寅
+    - 乙/庚 -> 戊寅
+    - 丙/辛 -> 庚寅
+    - 丁/壬 -> 壬寅
+    - 戊/癸 -> 甲寅
+
+    이후 월이 하나 진행할 때마다 천간도 하나씩 진행.
+    """
+
+    # year_stem_index: 0=甲,1=乙,2=丙,3=丁,4=戊,5=己,6=庚,7=辛,8=壬,9=癸
+    yin_start_by_year_stem = {
+        0: 2,  # 甲 -> 丙
+        5: 2,  # 己 -> 丙
+        1: 4,  # 乙 -> 戊
+        6: 4,  # 庚 -> 戊
+        2: 6,  # 丙 -> 庚
+        7: 6,  # 辛 -> 庚
+        3: 8,  # 丁 -> 壬
+        8: 8,  # 壬 -> 壬
+        4: 0,  # 戊 -> 甲
+        9: 0,  # 癸 -> 甲
+    }
+    start = yin_start_by_year_stem[year_stem_index]
+    return (start + (month_index - 1)) % 10
 
 
 def _hour_stem_index(day_stem_index: int, hour_index: int) -> int:
@@ -171,18 +334,41 @@ def calculate_chart(
     # NOTE: 현재 구현은 프로토타입 수준으로, calendar_type/is_leap_month/timezone을
     # 실제 변환(음력/절기) 계산에 반영하지 않습니다.
     # 다음 단계에서 절기월/음력월 모드를 이 파라미터로 구현합니다.
-    _ = (_normalize_calendar_type(calendar_type), is_leap_month, timezone)
+    _, _ = _normalize_calendar_type(calendar_type), is_leap_month
+    timezone, _tz_warn = _normalize_timezone(timezone)
+
+    # 전통 만세력 규칙: 하루 시작을 자시(23:00)로 보기도 함.
+    # 23:00~23:59 출생은 일주(일간/일지) 계산에서 다음날로 보정.
+    day_date_for_pillar = birth_date
+    if birth_time:
+        try:
+            birth_hour = int(birth_time.split(":")[0])
+        except ValueError:
+            birth_hour = -1
+        if birth_hour == 23:
+            day_date_for_pillar = birth_date + timedelta(days=1)
 
     year_index = _year_index(birth_date)
     year_pillar = _stem_branch_from_index(year_index)
 
-    month_index = _month_index(birth_date)
-    month_branch = BRANCHES[(month_index + 1) % 12]  # Tiger month as 1
+    # 절기월 기반 월지(지지)를 계산
+    # - birth_time이 있으면 해당 시각으로 절기월을 확정
+    # - birth_time이 없으면 정책 C가 필요하지만, Chart는 단일 월주만 담을 수 있어
+    #   여기서는 "대표값"으로 경계 이후(month_index after)를 사용합니다.
     year_stem_index = year_index % 10
-    month_stem = STEMS[_month_stem_index(year_stem_index, month_index)]
-    month_pillar = Pillar(stem=month_stem, branch=month_branch)
 
-    day_index = _sexagenary_index_for_day(birth_date)
+    month_pillar_candidates, month_uncertain = calculate_month_pillars_policy_c(
+        birth_date,
+        birth_time,
+        year_stem_index,
+        timezone=timezone,
+    )
+    _ = month_uncertain
+    representative_month = month_pillar_candidates[-1]
+    month_branch = representative_month.branch
+    month_pillar = Pillar(stem=representative_month.stem, branch=month_branch)
+
+    day_index = _sexagenary_index_for_day(day_date_for_pillar)
     day_pillar = _stem_branch_from_index(day_index)
 
     hour_pillar: Optional[Pillar] = None
@@ -275,6 +461,7 @@ def analyze(
     is_leap_month: bool = False,
     timezone: str = "Asia/Seoul",
 ) -> AnalysisResult:
+    timezone, tz_warn = _normalize_timezone(timezone)
     chart = calculate_chart(
         birth_date,
         birth_time,
@@ -296,9 +483,12 @@ def analyze(
         "health": "수면과 식사 리듬을 일정하게 유지하세요.",
     }
 
-    accuracy_note = None
+    notes: List[str] = []
+    if tz_warn:
+        notes.append(tz_warn)
     if not birth_time:
-        accuracy_note = "출생시간 미입력으로 시주가 제외되어 분석 정확도가 낮아질 수 있음"
+        notes.append("출생시간 미입력으로 시주가 제외되어 분석 정확도가 낮아질 수 있음")
+    accuracy_note = " / ".join(notes) if notes else None
 
     hidden_map = {
         "year_branch": HIDDEN_STEMS[chart.year.branch],
