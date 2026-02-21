@@ -8,8 +8,10 @@
     "dev:clean": "node scripts/clean.mjs --ports 3001,8000,3000",
     "dev:reset": "npm run dev:clean && npm run stop",
     "start:frontend": "cd frontend && npm run dev -- --hostname 127.0.0.1 --port 3001",
+    "start:frontend:prod": "cd frontend && npm run build && npm run start -- --hostname 127.0.0.1 --port 3001",
     "start:backend": "cd backend && PYTHONPATH=$PWD /Users/psg/saju/.venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
     "stop": "node scripts/stop.mjs",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "smoke:frontend": "python3 -c \"import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:3001/', timeout=3).status)\""
   }
 }

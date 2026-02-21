@@ -10,6 +10,7 @@ const getArg = (name, fallback) => {
 };
 
 const portsRaw = getArg("--ports", "3001,8000,3000");
+const verbose = getArg("--verbose", "0") === "1";
 const ports = portsRaw
   .split(",")
   .map((p) => Number(p.trim()))
@@ -44,9 +45,16 @@ const killPid = (pid, signal) => {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const main = async () => {
+  if (verbose) {
+    console.log(`Target ports: ${ports.join(", ")}`);
+  }
+
   const killed = [];
   for (const port of ports) {
     const pids = Array.from(new Set(listPids(port)));
+    if (verbose && pids.length) {
+      console.log(`[pre] port ${port} listening pids: ${pids.join(", ")}`);
+    }
     if (pids.length === 0) continue;
 
     for (const pid of pids) {
@@ -59,6 +67,9 @@ const main = async () => {
   // Escalate if still listening
   for (const port of ports) {
     const pids = Array.from(new Set(listPids(port)));
+    if (verbose && pids.length) {
+      console.log(`[post-term] port ${port} still listening pids: ${pids.join(", ")}`);
+    }
     for (const pid of pids) {
       if (killPid(pid, "SIGKILL")) {
         killed.push({ port, pid, signal: "SIGKILL" });
@@ -73,6 +84,17 @@ const main = async () => {
 
   const lines = killed.map((k) => `- port ${k.port}: pid ${k.pid} (${k.signal})`);
   console.log("Cleaned ports:\n" + lines.join("\n"));
+
+  // Final check
+  const stillListening = ports
+    .map((port) => ({ port, pids: Array.from(new Set(listPids(port))) }))
+    .filter((x) => x.pids.length);
+  if (stillListening.length) {
+    const msg = stillListening
+      .map((x) => `- port ${x.port}: ${x.pids.join(", ")}`)
+      .join("\n");
+    console.warn("WARNING: Some ports are still listening after cleanup:\n" + msg);
+  }
 };
 
 await main();
