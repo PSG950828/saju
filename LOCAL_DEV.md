@@ -23,7 +23,6 @@ npm run stop
 프론트만:
 
 ```bash
-npm run dev:frontend
 ```
 
 백엔드만:
@@ -36,6 +35,28 @@ npm run dev:backend
 
 VS Code Command Palette에서 `Tasks: Run Task`를 실행한 뒤 아래 중 선택하세요.
 
+
+## (추천) UI가 깨지지 않게 켜는 방법
+
+로컬에서 화면이 "기본 HTML처럼" 보이거나 스타일이 깨져 보일 때는 대부분 **CSS 문제가 아니라 서버가 꼬인 상태(포트 점유/프로세스 충돌)** 입니다.
+
+가장 안정적인 흐름:
+
+1) 포트 정리(자동)
+
+- `npm run dev:clean`
+
+2) 프론트/백엔드를 분리 실행 (VS Code Tasks 또는 각 터미널)
+
+- 프론트: `npm run start:frontend` (3001)
+- 백엔드: `npm run start:backend` (8000)
+
+### 'dev:clean'이 하는 일
+
+- 3001(프론트), 8000(백엔드), 3000(가끔 next가 자동으로 잡는 포트)
+  에서 LISTEN 중인 프로세스를 찾아 종료(SIGTERM → 필요 시 SIGKILL)합니다.
+
+> 주의: 개발용 포트만 대상으로 하며, 해당 포트를 다른 용도로 쓰고 있다면 종료될 수 있습니다.
 - `dev: start all`
 - `dev: stop all`
 - `dev: frontend (local 3001)`
@@ -53,10 +74,6 @@ lsof -n -iTCP:8000 -sTCP:LISTEN
 ```
 
 PID가 확인되면 종료:
-
-```bash
-kill <PID>
-```
 
 ### 백엔드에서 `No module named 'app'`
 
