@@ -227,6 +227,31 @@ p {
   margin-top: 8px;
 }
 
+/* 스토리 모달 */
+.story-modal-body {
+  padding-top: 6px;
+}
+
+.story-modal-body .story-h {
+  margin-top: 10px;
+  color: rgba(45, 52, 54, 0.92);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.story-modal-body .story-p {
+  margin-top: 8px;
+  color: rgba(45, 52, 54, 0.78);
+  line-height: 1.82;
+  font-size: 14.5px;
+}
+
+@media (max-width: 520px) {
+  .story-modal-body .story-p {
+    font-size: 14px;
+  }
+}
+
 /* 생활 가이드 카드 */
 .guide-grid {
   margin-top: 14px;

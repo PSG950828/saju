@@ -26,6 +26,17 @@ type AnalysisResponse = {
   accuracy_note?: string | null;
 };
 
+type FormState = {
+  name: string;
+  gender: "M" | "F";
+  birth_date: string;
+  birth_time: string; // 24h HH:MM
+  birth_time_meridiem: "AM" | "PM";
+  birth_time_hh: string; // 01-12
+  birth_time_mm: string; // 00-59
+  calendar_type: "SOLAR" | "LUNAR";
+};
+
 type OriginalResponse = {
   title: string;
   name: string;
@@ -43,28 +54,22 @@ type OriginalResponse = {
   >;
 };
 
-type TermModal = {
-  title: string;
-  subtitle: string;
-  summary: string;
-  points: string[];
-  caution: string;
-  example: string;
+type StoryPayload = {
+  v: 2;
+  name: string;
+  gender: string;
+  birthDate: string;
+  birthTime: string;
+  currentAge: number | null;
+  primaryTenGod: string;
+  deficiencyKey: string;
+  summaryOverall: string;
 };
 
 type CardContent = {
   title: string;
   lines: string[];
   bullets?: string[];
-};
-
-type Guidance = {
-  personality: string[];
-  routineIntro: string;
-  routines: string[];
-  healthIntro: string;
-  healthTips: string[];
-  healthOutro: string;
 };
 
 type TenGodDetail = {
@@ -79,148 +84,24 @@ type TenGodDetail = {
   action: string;
 };
 
-type TenGodStrength = "strong" | "normal" | "weak";
-
 type TenGodTag = {
   term: string;
   subtitle: string;
-  strength: TenGodStrength;
-  strengthLabel: "강함" | "보통" | "약함";
+  strength: "strong" | "normal" | "weak";
+  strengthLabel: string;
 };
 
-const defaultForm = {
+type TenGodStrength = TenGodTag["strength"];
+
+const defaultForm: FormState = {
   name: "",
-  birth_date: "1990-05-17",
-  birth_time: "09:30",
   gender: "M",
+  birth_date: "",
+  birth_time: "",
+  birth_time_meridiem: "AM",
+  birth_time_hh: "",
+  birth_time_mm: "",
   calendar_type: "SOLAR",
-  is_leap_month: false,
-  timezone: "Asia/Seoul",
-};
-
-const elementLabels: Record<string, string> = {
-  wood: "목",
-  fire: "화",
-  earth: "토",
-  metal: "금",
-  water: "수",
-};
-
-const focusByElement: Record<string, { primary: string; secondary: string }> = {
-  wood: { primary: "집중", secondary: "성과" },
-  fire: { primary: "활력", secondary: "관계" },
-  earth: { primary: "회복", secondary: "안정" },
-  metal: { primary: "정리", secondary: "집중" },
-  water: { primary: "유연성", secondary: "회복" },
-};
-
-const guidanceByElement: Record<string, Guidance> = {
-  wood: {
-    personality: ["당신은 추진력과 성장 욕구가 강합니다.", "목 기운은 시작과 확장에 강해요."],
-    routineIntro: "오늘은 아이디어를 바로 실행으로 옮기는 루틴이 좋습니다.",
-    routines: ["10분 내 실행 1개", "오후 집중 블록 2회"],
-    healthIntro: "과로와 긴장을 줄이는 것이 중요합니다.",
-    healthTips: ["가벼운 유산소", "목·어깨 스트레칭"],
-    healthOutro: "잠들기 전 호흡을 길게 가져가 보세요.",
-  },
-  fire: {
-    personality: ["당신은 표현과 확산이 자연스러운 성향입니다.", "화 기운은 열정과 소통에 강해요."],
-    routineIntro: "사람과 연결되는 루틴이 에너지를 올립니다.",
-    routines: ["감사 메시지 1개", "짧은 피드백 요청"],
-    healthIntro: "수면 리듬과 체열 관리가 핵심입니다.",
-    healthTips: ["따뜻한 물 섭취", "저녁 스트레칭"],
-    healthOutro: "늦은 시간에는 화면 밝기를 줄여보세요.",
-  },
-  earth: {
-    personality: ["당신은 안정감을 중시하고 실무 감각이 뛰어납니다.", "토 기운은 균형과 정리에 강해요."],
-    routineIntro: "오늘은 리듬을 유지하는 루틴이 좋습니다.",
-    routines: ["업무 시작 전 정리", "식사 시간 고정"],
-    healthIntro: "소화와 컨디션을 일정하게 유지하세요.",
-    healthTips: ["따뜻한 식사", "짧은 산책"],
-    healthOutro: "과도한 야식을 피하는 게 좋아요.",
-  },
-  metal: {
-    personality: ["당신은 기준과 질서를 중요하게 생각합니다.", "금 기운은 정리와 집중에 강해요."],
-    routineIntro: "정리 루틴을 만들면 성과가 올라갑니다.",
-    routines: ["오늘 할 일 3개", "마감 체크 5분"],
-    healthIntro: "호흡과 근육 긴장을 풀어주세요.",
-    healthTips: ["짧은 호흡 정리", "스트레칭"],
-    healthOutro: "스트레스를 낮추는 짧은 휴식이 필요해요.",
-  },
-  water: {
-    personality: ["당신은 통찰과 유연함이 강한 편입니다.", "수 기운은 변화 대응에 강해요."],
-    routineIntro: "하루의 흐름을 기록하면 안정감이 커집니다.",
-    routines: ["마감 전 기록", "중간 점검 1회"],
-    healthIntro: "수면과 컨디션을 일정하게 맞추세요.",
-    healthTips: ["따뜻한 차", "짧은 낮잠"],
-    healthOutro: "마음을 진정시키는 루틴이 필요해요.",
-  },
-};
-
-const cardLibrary: Record<string, CardContent[]> = {
-  안정: [
-    {
-      title: "안정 / 루틴",
-      lines: ["일상 루틴이 흔들리면 에너지가 빠르게 줄어듭니다."],
-      bullets: ["수면 시간 고정", "식사 리듬 유지"],
-    },
-  ],
-  활력: [
-    {
-      title: "활력 / 표현",
-      lines: ["표현과 교류가 활력을 끌어올립니다."],
-      bullets: ["짧은 통화", "피드백 요청"],
-    },
-  ],
-  관계: [
-    {
-      title: "관계 / 연결",
-      lines: ["혼자보다 함께일 때 에너지가 상승합니다."],
-      bullets: ["오늘 대화 1개", "감사 표현 1회"],
-    },
-  ],
-  표현: [
-    {
-      title: "표현 / 소통",
-      lines: ["생각을 표현하는 순간 에너지가 살아납니다."],
-      bullets: ["짧은 메시지 1개", "의견 정리 5분"],
-    },
-  ],
-  정리: [
-    {
-      title: "정리 / 기준",
-      lines: ["정리하면 집중력이 상승합니다."],
-      bullets: ["책상 정리 5분", "우선순위 3개"],
-    },
-  ],
-  회복: [
-    {
-      title: "휴식 / 회복",
-      lines: ["회복이 충분해야 집중도와 성과가 올라갑니다."],
-      bullets: ["눈 감고 3분", "가벼운 스트레칭"],
-    },
-  ],
-  집중: [
-    {
-      title: "집중 / 몰입",
-      lines: ["하나의 일에 몰입할 때 결과가 가장 좋습니다."],
-      bullets: ["25분 집중", "5분 정리"],
-    },
-  ],
-  성과: [
-    {
-      title: "성과 / 실행",
-      lines: ["실행을 작게 나누면 성과가 빠르게 쌓입니다."],
-      bullets: ["오늘 완료 1개", "내일 계획 1개"],
-    },
-  ],
-  유연성: [
-    {
-      title: "유연성 / 변화",
-      lines: ["상황 변화에 맞게 방향을 조정하는 힘이 중요합니다."],
-      bullets: ["여유 시간 확보", "우선순위 3개"],
-    },
-  ],
 };
 
 const termDictionary = [
@@ -257,6 +138,156 @@ const termDictionary = [
     example: "나무 기운도 ‘송백목’처럼 결이 다르게 표현될 수 있어요.",
   },
 ];
+
+const elementLabels: Record<string, string> = {
+  wood: "목",
+  fire: "화",
+  earth: "토",
+  metal: "금",
+  water: "수",
+};
+
+const guidanceByElement: Record<
+  string,
+  {
+    personality: string[];
+    routineIntro: string;
+    routines: string[];
+    healthIntro: string;
+    health: string[];
+    healthTips: string[];
+    todayIntro: string;
+    todays: CardContent[];
+  }
+> = {
+  wood: {
+    personality: ["성장은 빠른데, 마음은 섬세한 편이에요.", "새로운 걸 시작할 때 에너지 상승폭이 큽니다."],
+    routineIntro: "목 기운이 약할 때는 ‘시작’의 힘이 조금 늦게 붙을 수 있어요.",
+    routines: ["하루 10분 걷기", "아침에 할 일 1개만 먼저 확정"],
+    healthIntro: "몸은 ‘긴장’부터 먼저 반응할 수 있어요.",
+    health: ["목/어깨 스트레칭 3분", "수분 섭취 체크"],
+  healthTips: ["몸을 풀면 마음도 풀려요.", "무리한 속도보다 꾸준함이 이깁니다."],
+    todayIntro: "오늘은 ‘작게 시작하고 끝내기’가 제일 중요합니다.",
+    todays: [
+      { title: "시작", lines: ["미루던 1개를 10분만 손대보세요."], bullets: ["10분 타이머", "끝나면 체크"] },
+    ],
+  },
+  fire: {
+    personality: ["기분과 에너지의 파도가 있는 편이에요.", "사람/분위기에 반응이 빠릅니다."],
+    routineIntro: "화 기운이 약할 때는 ‘의욕’이 들쑥날쑥해질 수 있어요.",
+    routines: ["햇빛 5분", "따뜻한 물 한 잔"],
+    healthIntro: "과열되면 잠/호흡이 먼저 흔들릴 수 있어요.",
+    health: ["호흡 2분", "카페인 컷오프 시간 정하기"],
+  healthTips: ["흥분을 낮추면 판단이 선명해져요.", "잠을 지키면 운이 덜 새요."],
+    todayIntro: "오늘은 ‘컨디션을 끌어올리는 스위치’를 먼저 켜요.",
+    todays: [
+      { title: "컨디션", lines: ["짧게라도 몸을 데우면 리듬이 빨리 돌아옵니다."], bullets: ["가벼운 스트레칭", "따뜻한 샤워"] },
+    ],
+  },
+  earth: {
+    personality: ["안정이 있어야 집중이 잡히는 편이에요.", "사람과 일에서 ‘기준’이 중요합니다."],
+    routineIntro: "토 기운이 약할 때는 중심이 흔들리며 불안이 커질 수 있어요.",
+    routines: ["책상 정리 5분", "우선순위 3개만 남기기"],
+    healthIntro: "소화/피로처럼 ‘기본 리듬’에서 신호가 올 수 있어요.",
+    health: ["식사 시간 고정", "가벼운 산책 10분"],
+  healthTips: ["기본 리듬이 무너지면 모든 게 거칠어져요.", "작은 정리가 큰 회복입니다."],
+    todayIntro: "오늘은 ‘정리’가 곧 회복입니다.",
+    todays: [
+      { title: "정리", lines: ["지금 필요한 것만 남기면 마음이 편해져요."], bullets: ["5분 정리", "메모 3줄"] },
+    ],
+  },
+  metal: {
+    personality: ["결정이 선명할수록 더 편해져요.", "애매함이 길어지면 피로가 빨리 옵니다."],
+    routineIntro: "금 기운이 약할 때는 ‘결단’이 미뤄지며 스트레스가 쌓일 수 있어요.",
+    routines: ["결정 1개를 오늘 확정", "거절 문장 1개 준비"],
+    healthIntro: "긴장이 오래 가면 근육/호흡이 굳을 수 있어요.",
+    health: ["어깨·목 풀기", "잠들기 전 화면 10분 컷"],
+  healthTips: ["긴장을 풀어야 말이 부드러워져요.", "결정을 미루면 피로가 쌓여요."],
+    todayIntro: "오늘은 ‘선택지를 줄이는’ 쪽이 결과가 좋아요.",
+    todays: [
+      { title: "결정", lines: ["미정인 1개를 ‘한다/안 한다’로 갈라보세요."], bullets: ["결정 1개", "공유 1회"] },
+    ],
+  },
+  water: {
+    personality: ["생각이 깊고, 한 번 빠지면 몰입이 강해요.", "혼자 정리하는 시간이 필요합니다."],
+    routineIntro: "수 기운이 약할 때는 ‘회복’이 늦어지며 집중이 떨어질 수 있어요.",
+    routines: ["낮잠 15분 또는 눈 감기 3분", "산책하며 생각 정리"],
+    healthIntro: "과로하면 수면의 질부터 먼저 흔들릴 수 있어요.",
+    health: ["수면 시간 고정", "따뜻한 차 1잔"],
+  healthTips: ["회복이 먼저면 일은 따라옵니다.", "과로 신호를 작게라도 잡아주세요."],
+    todayIntro: "오늘은 ‘회복을 먼저’ 잡아야 일이 풀립니다.",
+    todays: [
+      { title: "회복", lines: ["쉬는 시간이 죄책감이 아니라 전략이 됩니다."], bullets: ["눈 감기 3분", "가벼운 스트레칭"] },
+    ],
+  },
+};
+
+const focusByElement: Record<string, { primary: string; secondary: string }> = {
+  wood: { primary: "시작", secondary: "집중" },
+  fire: { primary: "표현", secondary: "성과" },
+  earth: { primary: "정리", secondary: "회복" },
+  metal: { primary: "정리", secondary: "집중" },
+  water: { primary: "회복", secondary: "유연성" },
+};
+
+const cardLibrary: Record<string, CardContent[]> = {
+  관계: [
+    {
+      title: "관계 / 연결",
+      lines: ["한 번의 대화가 흐름을 바꿉니다.", "짧게라도 진심을 남겨보세요."],
+      bullets: ["오늘 대화 1개", "감사 표현 1회"],
+    },
+  ],
+  시작: [
+    {
+      title: "시작 / 첫 발",
+      lines: ["처음 10분이 제일 어렵고, 그 다음은 쉬워져요."],
+      bullets: ["10분 타이머", "끝나면 체크"],
+    },
+  ],
+  표현: [
+    {
+      title: "표현 / 소통",
+      lines: ["생각을 ‘밖으로’ 꺼낼 때 막힌 게 풀립니다."],
+      bullets: ["짧은 메시지 1개", "의견 정리 5분"],
+    },
+  ],
+  정리: [
+    {
+      title: "정리 / 기준",
+      lines: ["정리하면 마음이 가벼워지고 집중이 돌아옵니다."],
+      bullets: ["책상 정리 5분", "우선순위 3개"],
+    },
+  ],
+  회복: [
+    {
+      title: "휴식 / 회복",
+      lines: ["회복이 충분해야 말도 부드러워지고 판단이 정확해져요."],
+      bullets: ["눈 감고 3분", "가벼운 스트레칭"],
+    },
+  ],
+  집중: [
+    {
+      title: "집중 / 몰입",
+      lines: ["한 번에 하나만 잡으면 속도가 붙습니다."],
+      bullets: ["25분 집중", "5분 정리"],
+    },
+  ],
+  성과: [
+    {
+      title: "성과 / 실행",
+      lines: ["실행을 작게 나누면 결과가 빨리 쌓입니다."],
+      bullets: ["오늘 완료 1개", "내일 계획 1개"],
+    },
+  ],
+  유연성: [
+    {
+      title: "유연성 / 변화",
+      lines: ["상황이 바뀌면 방향을 ‘조금’ 조정하는 힘이 중요합니다."],
+      bullets: ["여유 시간 확보", "우선순위 3개"],
+    },
+  ],
+};
 
 const tenGodEducation = [
   { stem: "甲", term: "비견", subtitle: "독립적 · 경쟁형 성향" },
@@ -469,9 +500,11 @@ export default function Home() {
   const [activeView, setActiveView] = useState<"analysis" | "terms">("analysis");
   const [activeTenGod, setActiveTenGod] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [storyExpanded, setStoryExpanded] = useState(false);
+  const [storyModalOpen, setStoryModalOpen] = useState(false);
+  const [storyLines, setStoryLines] = useState<string[] | null>(null);
   const [selectedLuckAge, setSelectedLuckAge] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const storyModalRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
   const termsSectionRef = useRef<HTMLElement | null>(null);
 
@@ -479,6 +512,11 @@ export default function Home() {
     lastFocusedElementRef.current = document.activeElement as HTMLElement | null;
     setActiveTenGod(term);
     setIsModalOpen(true);
+  };
+
+  const openStoryModal = () => {
+    lastFocusedElementRef.current = document.activeElement as HTMLElement | null;
+    setStoryModalOpen(true);
   };
 
   const closeTenGodModal = () => {
@@ -493,13 +531,167 @@ export default function Home() {
     return `${date} · ${genderLabel} · ${time}`;
   };
 
+  const getStoryCacheKey = (payload: StoryPayload) => {
+    // 개인정보를 그대로 키로 쓰지 않기 위해(노출 최소화) 짧은 해시를 만들어 사용
+    // 암호학적 해시는 아니지만, “동일 입력 → 동일 키”를 안정적으로 만족합니다.
+    const raw = JSON.stringify(payload);
+    let hash = 2166136261;
+    for (let i = 0; i < raw.length; i += 1) {
+      hash ^= raw.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `story:v2:${(hash >>> 0).toString(16)}`;
+  };
+
+  const generateStory = (params: {
+    name: string;
+    primaryTenGod: string | null;
+    deficiencyLabel: string | null;
+    summary: AnalysisResponse["summary"];
+    personalitySeed: string | null;
+    currentAge: number | null;
+  }): string[] => {
+    const rawName = (params.name || "당신").trim();
+    const safeName = rawName.length > 0 ? rawName : "당신";
+
+    const primary = params.primaryTenGod;
+    const def = params.deficiencyLabel;
+    const age = params.currentAge;
+
+    const rel = params.summary?.relationships ? params.summary.relationships.replace(/\.$/, "") : null;
+    const money = params.summary?.money_work ? params.summary.money_work.replace(/\.$/, "") : null;
+    const health = params.summary?.health ? params.summary.health.replace(/\.$/, "") : null;
+    const persona = params.personalitySeed ? params.personalitySeed.replace(/\.$/, "") : null;
+
+    const ageBandLabel = (() => {
+      if (age == null) return "지금";
+      if (age < 10) return "0~9세";
+      if (age < 20) return "10대";
+      if (age < 30) return "20대";
+      if (age < 40) return "30대";
+      if (age < 50) return "40대";
+      if (age < 60) return "50대";
+      return "60대 이후";
+    })();
+
+    const lines: string[] = [];
+
+    lines.push(`${safeName}님의 흐름을 시간 순서대로 따라가볼게요.`);
+    lines.push("한 번에 결론을 내리기보다, 장면을 이어서 보면 더 정확해집니다.");
+
+    lines.push("먼저 어린 시절(0~12세). ");
+    lines.push("빠르게 앞에 나서기보다는, 주변을 읽는 시간이 더 길었을 거예요.");
+    lines.push("사람의 표정, 말투, 분위기 같은 미세한 변화에 민감하게 반응합니다.");
+    lines.push("그래서 스스로를 지키는 방법도 일찍 배웁니다. 말을 아끼는 날이 있었겠죠.");
+    lines.push("그 조용함은 위축이 아니라, 기준을 만드는 시간에 가까워요.");
+
+    lines.push("10대에는 나만의 리듬을 찾으려는 마음이 커집니다.");
+    lines.push("어른들이 정해둔 답과, 내가 느끼는 답 사이에 틈이 생겨요.");
+    lines.push("그 틈에서 흔들리기보다 관찰이 깊어집니다. 무엇이 나를 불편하게 하는지가 선명해져요.");
+    lines.push("가끔은 말보다 행동으로 보여주고 싶어서, 결과로 증명하는 쪽으로 기울기도 합니다.");
+    lines.push("이 시기에 만들어진 기준이 이후 선택의 울타리가 됩니다.");
+
+    lines.push("20대는 속도가 붙는 구간이에요. ");
+    lines.push("새로운 사람, 새로운 역할, 새로운 경쟁이 한꺼번에 들어오면서 삶의 레벨이 바뀝니다.");
+    lines.push(`${safeName}님은 무작정 넓히기보다, 나에게 맞는 방식부터 정리하는 쪽이었을 거예요.`);
+    lines.push("크게 실패하는 길은 피하고, 작은 실패를 여러 번 겪으며 감을 잡는 편이 더 잘 맞습니다.");
+    lines.push("돈과 일도 비슷합니다. 한 방보다 지속되는 구조가 있을 때 마음이 편해져요.");
+
+    lines.push("30대는 책임의 밀도가 달라집니다. ");
+    lines.push("관계에서도 일에서도, 내가 감당할 수 있는 범위를 스스로 정해야 하는 순간이 많아져요.");
+    lines.push("호의만으로 버티기 어렵고, 규칙이 있어야 편해집니다.");
+    lines.push("기준이 분명해질수록 사람을 가려내는 눈도 선명해져요.");
+    lines.push("관계가 줄어드는 듯 보여도, 사실은 정리되고 있는 겁니다.");
+
+    lines.push(`그리고 지금, ${ageBandLabel}의 중심에 서 있습니다.`);
+    lines.push("이 구간은 삶을 확장할지, 재배치할지 선택의 무게가 커집니다.");
+    lines.push("해야 할 일이 늘어나도 마음이 원하는 건 단순해요. 덜 소모하고 싶습니다.");
+
+    if (persona) {
+      lines.push(`${safeName}님 성격의 핵심 결은 ‘${persona}’ 쪽으로 정리됩니다.`);
+      lines.push("사람을 대할 때도, 결정을 할 때도, 겉의 말보다 속의 의도를 먼저 확인하죠.");
+    } else {
+      lines.push("겉은 차분해 보여도 속은 계산이 빠릅니다.");
+      lines.push("감정이 올라오는 순간에도 한 번 더 보고, 한 번 더 확인해요.");
+    }
+
+    if (primary) {
+      lines.push(`요즘은 ‘${primary}’이(가) 앞에 서 있어서, 선택의 기준이 더 날카로워집니다.`);
+      lines.push("애매한 제안, 애매한 관계, 애매한 목표가 버티기 힘들어져요.");
+      lines.push("그래서 끊는 게 아니라 선명하게 정리합니다. 남길 것과 흘려보낼 것을요.");
+    } else {
+      lines.push("요즘은 바깥의 평가보다, 안쪽의 기준을 다시 세우는 쪽으로 마음이 갑니다.");
+      lines.push("기준이 세워지는 속도가 늦어도 괜찮아요. 지금은 그게 더 값집니다.");
+    }
+
+    lines.push("관계에서는 한 마디가 중요해집니다.");
+    lines.push("짧게 말하면 오해가 남고, 이유를 한 줄만 붙이면 신뢰가 생깁니다.");
+    if (rel) {
+      lines.push(`특히 관계의 흐름은 ${rel} 쪽으로 굽어갑니다.`);
+      lines.push("포인트는 맞다/틀리다가 아니라, 안전하게 이야기할 수 있나예요.");
+    } else {
+      lines.push("상대가 편안해지는 방식에 맞춰 속도를 조절하면 관계가 길어집니다.");
+      lines.push("서로의 리듬을 존중하는 순간, 말이 부드러워져요.");
+    }
+
+    lines.push("일과 돈은 구조의 문제로 넘어옵니다.");
+    if (money) {
+      lines.push(money.endsWith("다") ? money : `${money}.`);
+      lines.push("성과가 붙을수록 새 요청이 따라오는데, 다 받아내면 체력이 먼저 바닥나요.");
+    } else {
+      lines.push("무엇을 하느냐보다, 어떤 방식으로 반복하느냐가 결과를 바꿉니다.");
+      lines.push("작은 루틴이 없으면 큰 결심만 남고, 큰 결심은 오래 못 가요.");
+    }
+
+    lines.push("몸도 솔직해집니다.");
+    if (health) {
+      lines.push(health.endsWith("다") ? health : `${health}.`);
+      lines.push("몸이 보내는 신호를 무시하면 마음이 먼저 까칠해지고 판단이 날카로워져요.");
+    } else {
+      lines.push("잠과 식사의 주기가 흔들리면 마음이 먼저 예민해집니다.");
+      lines.push("컨디션이 안정되면 생각이 풀리고, 말이 부드러워져요.");
+    }
+
+    if (def) {
+      lines.push(`${safeName}님에게는 ${def} 기운을 보완하는 습관이 지금 더 중요해집니다.`);
+      lines.push("크게 바꾸지 말고, 하루에 한 가지를 고정해보세요.");
+    } else {
+      lines.push("기운의 균형을 조금만 조정해도 삶의 마찰이 눈에 띄게 줄어듭니다.");
+      lines.push("그 여유가 결국 선택의 품질을 올려요.");
+    }
+
+    lines.push("이후 흐름(50대 이후)은 사건보다 역할이 핵심이에요.");
+    lines.push("무엇을 더 얻느냐보다, 무엇을 남기고 무엇을 전하느냐가 중요해집니다.");
+    lines.push("경험은 자산이 되고, 말은 기준이 됩니다.");
+    lines.push("내 방식을 지키되, 타인이 따라올 수 있게 정리하는 일이 남아요.");
+    lines.push("가르치거나 설계하거나, 시스템을 만드는 쪽으로 자연스럽게 이어집니다.");
+
+    lines.push("마지막으로 한 문장만 남길게요.");
+    lines.push("지금은 더 많이 하는 시기가 아니라, 더 선명해지는 시기입니다.");
+
+    return lines
+      .map((line) => line.replace(/\$\{name\}/g, safeName))
+      .filter((line) => line.trim() !== "");
+  };
+
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     const title = "Dream Insight · 사주 결과";
 
+    const storyPreview = storyLines
+      ? storyLines
+          .filter((line) => line.trim() !== "" && !line.startsWith("["))
+          .slice(0, 2)
+          .join(" ")
+      : "";
+
+    const shareText = `${title}\n${formatBirthInfo()}\n\n${
+      result?.summary?.overall ?? ""
+    }${storyPreview ? `\n\n${storyPreview}` : ""}\n\n${url}`.trim();
+
     try {
       if (navigator.share) {
-        await navigator.share({ title, url });
+        await navigator.share({ title, text: shareText, url });
         return;
       }
     } catch {
@@ -507,8 +699,8 @@ export default function Home() {
     }
 
     try {
-      await navigator.clipboard.writeText(url);
-      setToastMessage("링크를 복사했어요.");
+      await navigator.clipboard.writeText(shareText);
+      setToastMessage("요약 + 링크를 복사했어요.");
       window.setTimeout(() => setToastMessage(null), 1700);
     } catch {
       setToastMessage("복사에 실패했어요. 주소창 링크를 사용해 주세요.");
@@ -522,6 +714,8 @@ export default function Home() {
     setError(null);
     setOriginalError(null);
     setActiveTenGod(null);
+    setStoryLines(null);
+    closeStoryModal();
     closeTenGodModal();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -542,42 +736,7 @@ export default function Home() {
     (typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("debug") === "1");
 
-  const buildStoryLines = (
-    summary: AnalysisResponse["summary"],
-    personalitySeed: string | null,
-    primary: string | null,
-    deficiencyKey: string | null
-  ): string[] => {
-    const deficiencyLabel = deficiencyKey ? elementLabels[deficiencyKey] : null;
-
-    const primaryLine = primary ? `현재 핵심 기운은 ${primary}입니다.` : "";
-    const balanceLine = deficiencyLabel
-      ? `균형을 위해서는 ‘${deficiencyLabel}’ 기운을 조금 더 보완하는 흐름이 좋아요.`
-      : "오행의 균형을 조금만 조절하면 컨디션과 선택이 더 안정됩니다.";
-
-    const moneySeed = summary?.money_work ? summary.money_work : "";
-    const relSeed = summary?.relationships ? summary.relationships : "";
-    const healthSeed = summary?.health ? summary.health : "";
-
-    return [
-      "어릴 때는 크게 튀기보다 상황을 읽고 자신의 기준을 만들려는 쪽에 가까웠을 가능성이 큽니다.",
-      personalitySeed
-        ? `성향으로 보면, ${personalitySeed.replace(/\.$/, "")} 쪽으로 자연스럽게 흐릅니다.`
-        : "성향으로 보면, ‘기준을 세운 뒤 움직이는 타입’에 가깝습니다.",
-      primaryLine,
-      moneySeed
-        ? `일과 돈의 흐름은 ${moneySeed.replace(/\.$/, "")} 쪽에서 힌트를 얻을 수 있어요.`
-        : "일과 돈은 ‘지속 가능한 루틴’에서 성과가 쌓입니다.",
-      relSeed
-        ? `관계에서는 ${relSeed.replace(/\.$/, "")} 점이 반복 패턴이 되기 쉬워요.`
-        : "관계에서는 솔직함과 거리 조절의 균형이 핵심입니다.",
-      healthSeed
-        ? `컨디션은 ${healthSeed.replace(/\.$/, "")} 부분을 먼저 다듬으면 좋아요.`
-        : "컨디션은 수면 리듬과 회복 루틴이 키입니다.",
-      balanceLine,
-      "지금은 ‘완벽한 답’보다 작은 실행으로 방향을 확인할 때 흐름이 더 빨라집니다.",
-    ].filter(Boolean);
-  };
+  const closeStoryModal = () => setStoryModalOpen(false);
 
   const fetchWithTimeout = async (
     input: RequestInfo,
@@ -604,6 +763,35 @@ export default function Home() {
   const handleChange = (key: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
+
+  const to24h = (meridiem: "AM" | "PM", hh: string, mm: string) => {
+    if (!hh || !mm) return "";
+    const h = Number.parseInt(hh, 10);
+    const m = Number.parseInt(mm, 10);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return "";
+    if (h < 1 || h > 12 || m < 0 || m > 59) return "";
+    let hour24 = h % 12;
+    if (meridiem === "PM") hour24 += 12;
+    return `${String(hour24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    if (unknownTime) {
+      if (form.birth_time !== "") {
+        setForm((prev) => ({ ...prev, birth_time: "" }));
+      }
+      return;
+    }
+    const next = to24h(form.birth_time_meridiem, form.birth_time_hh, form.birth_time_mm);
+    if (!next) {
+      if (form.birth_time !== "") {
+        setForm((prev) => ({ ...prev, birth_time: "" }));
+      }
+      return;
+    }
+    if (next !== form.birth_time) setForm((prev) => ({ ...prev, birth_time: next }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.birth_time_meridiem, form.birth_time_hh, form.birth_time_mm, unknownTime]);
 
   const handleOriginal = async () => {
     setOriginalLoading(true);
@@ -772,6 +960,56 @@ export default function Home() {
     };
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (!storyModalOpen) {
+      document.body.style.overflow = "";
+      lastFocusedElementRef.current?.focus?.();
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+    storyModalRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeStoryModal();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const root = storyModalRef.current;
+      if (!root) return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute("disabled") && !el.getAttribute("aria-hidden"));
+
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey) {
+        if (document.activeElement === first || document.activeElement === root) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [storyModalOpen]);
+
   const deficiencyKey = result?.element_score.top_deficiencies[0] ?? "earth";
   const guidance = guidanceByElement[deficiencyKey] ?? guidanceByElement.earth;
   const deficiencyLabel = elementLabels[deficiencyKey] ?? "-";
@@ -876,6 +1114,59 @@ export default function Home() {
     if (!result) return;
     setSelectedLuckAge((prev) => prev ?? activeLuckAge);
     // result/original이 바뀔 때 1회 기본 선택
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, original]);
+
+  useEffect(() => {
+    if (!result) return;
+
+    const deficiencyKeyNow = result.element_score?.top_deficiencies?.[0] ?? "earth";
+    const deficiencyLabelNow = elementLabels[deficiencyKeyNow] ?? null;
+    const displayNameNow = original?.name ?? (form.name ? form.name : "당신");
+    const summaryOverallNow = result.summary?.overall ?? "";
+    const primaryTenGodNow = primaryTenGod ?? "";
+
+    const payload: StoryPayload = {
+      v: 2,
+      name: original?.name ?? form.name ?? "",
+      birthDate: original?.birth_date ?? form.birth_date ?? "",
+      gender: form.gender ?? "",
+      birthTime: original?.birth_time ?? (unknownTime ? "" : form.birth_time) ?? "",
+      primaryTenGod: primaryTenGodNow,
+      deficiencyKey: deficiencyKeyNow,
+      summaryOverall: summaryOverallNow,
+      currentAge,
+    };
+
+    const key = getStoryCacheKey(payload);
+    try {
+      const cached = window.localStorage.getItem(key);
+      if (cached) {
+        const parsed = JSON.parse(cached) as { lines: string[] };
+        if (Array.isArray(parsed.lines) && parsed.lines.length >= 10) {
+          setStoryLines(parsed.lines);
+          return;
+        }
+      }
+    } catch {
+      // 캐시 불러오기 실패는 무시
+    }
+
+    const newLines = generateStory({
+      name: displayNameNow,
+      primaryTenGod: primaryTenGodNow || null,
+      deficiencyLabel: deficiencyLabelNow,
+      summary: result.summary,
+      personalitySeed: personalityLines?.[0] ?? null,
+      currentAge,
+    });
+
+    setStoryLines(newLines);
+    try {
+      window.localStorage.setItem(key, JSON.stringify({ lines: newLines }));
+    } catch {
+      // 저장 실패는 무시
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, original]);
 
@@ -1008,14 +1299,51 @@ export default function Home() {
         </label>
         <label>
           출생시간
-          <input
-            type="time"
-            value={form.birth_time}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              handleChange("birth_time", event.target.value)
-            }
-            disabled={unknownTime}
-          />
+          <div style={{ display: "grid", gridTemplateColumns: "96px 1fr 1fr", gap: 10 }}>
+            <select
+              value={form.birth_time_meridiem}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                handleChange("birth_time_meridiem", event.target.value)
+              }
+              disabled={unknownTime}
+              aria-label="오전/오후"
+            >
+              <option value="AM">오전</option>
+              <option value="PM">오후</option>
+            </select>
+
+            <input
+              inputMode="numeric"
+              placeholder="05"
+              value={form.birth_time_hh}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleChange(
+                  "birth_time_hh",
+                  event.target.value.replace(/[^0-9]/g, "").slice(0, 2)
+                )
+              }
+              disabled={unknownTime}
+              aria-label="시(01~12)"
+            />
+
+            <input
+              inputMode="numeric"
+              placeholder="30"
+              value={form.birth_time_mm}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleChange(
+                  "birth_time_mm",
+                  event.target.value.replace(/[^0-9]/g, "").slice(0, 2)
+                )
+              }
+              disabled={unknownTime}
+              aria-label="분(00~59)"
+            />
+          </div>
+
+          <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>
+            전송 형식: {form.birth_time || "--:--"}
+          </div>
           <div className="badge">
             <input
               type="checkbox"
@@ -1257,23 +1585,21 @@ export default function Home() {
                   <button
                     type="button"
                     className="ghost-btn"
-                    onClick={() => setStoryExpanded((prev) => !prev)}
-                    aria-expanded={storyExpanded}
+                    onClick={openStoryModal}
+                    aria-label="사주 이야기 전체 보기"
                   >
-                    {storyExpanded ? "접기" : "자세히 보기"}
+                    자세히 보기
                   </button>
                 </div>
 
                 <div className="story-body">
-                  {buildStoryLines(
-                    result.summary,
-                    personalityLines?.[0] ?? null,
-                    primaryTenGod ?? null,
-                    result.element_score?.top_deficiencies?.[0] ?? null
-                  )
-                    .slice(0, storyExpanded ? 999 : 8)
+                  {(storyLines ?? [
+                    "사주 이야기를 만드는 중입니다.",
+                  ])
+                    .filter((line) => Boolean(line))
+                    .slice(0, 7)
                     .map((line) => (
-                      <p key={line}>{line}</p>
+                      <p key={line}>{line.replace(/\$\{name\}/g, original?.name ?? form.name ?? "당신")}</p>
                     ))}
                 </div>
               </section>
@@ -1626,6 +1952,54 @@ export default function Home() {
                   </div>
                 </section>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {storyModalOpen && storyLines && (
+        <div
+          className="modal-overlay"
+          role="presentation"
+          onClick={() => {
+            // 배경 클릭으로 닫히지 않도록 (요구사항)
+          }}
+        >
+          <div
+            className="modal story-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="당신의 사주 이야기"
+            tabIndex={-1}
+            ref={storyModalRef}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-header sticky">
+              <div>
+                <div className="modal-title">당신의 사주 이야기</div>
+                <div className="modal-subtitle">
+                  요약이 아니라, {original?.name ?? (form.name ? form.name : "당신")}님의 흐름을 서사로 풀어낸 해석입니다.
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={closeStoryModal}
+              >
+                ✕ 닫기
+              </button>
+            </div>
+
+            <div className="modal-body story-modal-body">
+              {storyLines.map((line, idx) =>
+                line.trim() === "" ? (
+                  <div key={`gap-${idx}`} style={{ height: 10 }} />
+                ) : (
+                  <p key={`${idx}-${line}`} className={line.startsWith("[") ? "story-h" : "story-p"}>
+                    {line}
+                  </p>
+                )
+              )}
             </div>
           </div>
         </div>
