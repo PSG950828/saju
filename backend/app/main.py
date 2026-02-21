@@ -35,7 +35,13 @@ async def create_analysis(payload: ChartInput) -> AnalysisResponse:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail="birth_date must be YYYY-MM-DD") from exc
 
-    analysis = analyze(birth_date, payload.birth_time)
+    analysis = analyze(
+        birth_date=birth_date,
+        birth_time=payload.birth_time,
+        calendar_type=payload.calendar_type,
+        is_leap_month=payload.is_leap_month,
+        timezone=payload.timezone,
+    )
 
     chart = Chart(
         year_pillar=Pillar(stem=analysis.chart.year.stem, branch=analysis.chart.year.branch),
@@ -68,7 +74,14 @@ async def create_original(payload: OriginalInput) -> OriginalResponse:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail="birth_date must be YYYY-MM-DD") from exc
 
-    original = build_original_result(birth_date, payload.birth_time, payload.name)
+    original = build_original_result(
+        birth_date=birth_date,
+        birth_time=payload.birth_time,
+        name=payload.name,
+        calendar_type=payload.calendar_type,
+        is_leap_month=payload.is_leap_month,
+        timezone=payload.timezone,
+    )
 
     return OriginalResponse(
         title=original.title,

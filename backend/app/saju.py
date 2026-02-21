@@ -67,6 +67,13 @@ BRANCH_WEIGHTS = {
 ELEMENTS = ["wood", "fire", "earth", "metal", "water"]
 
 
+def _normalize_calendar_type(value: Optional[str]) -> str:
+    if not value:
+        return "SOLAR"
+    value = value.upper().strip()
+    return value if value in {"SOLAR", "LUNAR"} else "SOLAR"
+
+
 @dataclass
 class Pillar:
     stem: str
@@ -153,7 +160,19 @@ def _hour_stem_index(day_stem_index: int, hour_index: int) -> int:
     return (day_stem_index * 2 + hour_index) % 10
 
 
-def calculate_chart(birth_date: date, birth_time: Optional[str]) -> Chart:
+def calculate_chart(
+    birth_date: date,
+    birth_time: Optional[str],
+    *,
+    calendar_type: str = "SOLAR",
+    is_leap_month: bool = False,
+    timezone: str = "Asia/Seoul",
+) -> Chart:
+    # NOTE: 현재 구현은 프로토타입 수준으로, calendar_type/is_leap_month/timezone을
+    # 실제 변환(음력/절기) 계산에 반영하지 않습니다.
+    # 다음 단계에서 절기월/음력월 모드를 이 파라미터로 구현합니다.
+    _ = (_normalize_calendar_type(calendar_type), is_leap_month, timezone)
+
     year_index = _year_index(birth_date)
     year_pillar = _stem_branch_from_index(year_index)
 
@@ -248,8 +267,21 @@ def _routine_for_element(element: str) -> List[str]:
     return routines[element]
 
 
-def analyze(birth_date: date, birth_time: Optional[str]) -> AnalysisResult:
-    chart = calculate_chart(birth_date, birth_time)
+def analyze(
+    birth_date: date,
+    birth_time: Optional[str],
+    *,
+    calendar_type: str = "SOLAR",
+    is_leap_month: bool = False,
+    timezone: str = "Asia/Seoul",
+) -> AnalysisResult:
+    chart = calculate_chart(
+        birth_date,
+        birth_time,
+        calendar_type=calendar_type,
+        is_leap_month=is_leap_month,
+        timezone=timezone,
+    )
     element_score = calculate_elements(chart)
 
     main_deficiency = element_score.top_deficiencies[0]
@@ -291,9 +323,21 @@ def _birth_date_text(birth_date: date) -> str:
 
 
 def build_original_result(
-    birth_date: date, birth_time: Optional[str], name: Optional[str]
+    birth_date: date,
+    birth_time: Optional[str],
+    name: Optional[str],
+    *,
+    calendar_type: str = "SOLAR",
+    is_leap_month: bool = False,
+    timezone: str = "Asia/Seoul",
 ) -> OriginalResult:
-    chart = calculate_chart(birth_date, birth_time)
+    chart = calculate_chart(
+        birth_date,
+        birth_time,
+        calendar_type=calendar_type,
+        is_leap_month=is_leap_month,
+        timezone=timezone,
+    )
     title = "四柱八字"
     display_name = name or "未詳"
     birth_date_text = _birth_date_text(birth_date)

@@ -554,6 +554,33 @@ export default function Home() {
     const rawName = (params.name || "당신").trim();
     const safeName = rawName.length > 0 ? rawName : "당신";
 
+    // 한국어 조사 자동 처리(을/를, 이/가, 은/는, 와/과)
+    // - “화을(를)”처럼 잘못된 표기를 원천 차단합니다.
+    const lastHangulChar = (s: string) => {
+      for (let i = s.length - 1; i >= 0; i -= 1) {
+        const ch = s[i];
+        if (/[가-힣]/.test(ch)) return ch;
+      }
+      return null;
+    };
+
+    const hasFinalConsonant = (hangulChar: string) => {
+      const code = hangulChar.charCodeAt(0);
+      const base = 0xac00;
+      const offset = code - base;
+      if (offset < 0 || offset > 11171) return false;
+      return offset % 28 !== 0;
+    };
+
+    const josa = (word: string, pair: "을를" | "이가" | "은는" | "와과") => {
+      const hangul = lastHangulChar(word);
+      const 받침 = hangul ? hasFinalConsonant(hangul) : false;
+      if (pair === "을를") return 받침 ? "을" : "를";
+      if (pair === "이가") return 받침 ? "이" : "가";
+      if (pair === "은는") return 받침 ? "은" : "는";
+      return 받침 ? "과" : "와";
+    };
+
     const primary = params.primaryTenGod;
     const def = params.deficiencyLabel;
     const age = params.currentAge;
@@ -678,7 +705,7 @@ export default function Home() {
     const realEstateFlow = [
       "재산과 부동산은 화려한 타이밍보다, 컨디션과 생활 리듬이 안정되는 시점에 힘이 붙습니다.",
       "이동이 잦은 시기에는 유동성을, 정착이 필요한 시기에는 생활권을 먼저 잡는 게 손실을 줄여요.",
-      "집은 투자이기도 하지만, ${safeName}님에게는 ‘마음을 눕히는 자리’이기도 합니다.",
+      `집은 투자이기도 하지만, ${safeName}님에게는 ‘마음을 눕히는 자리’이기도 합니다.`,
     ];
 
     const stressFlow = (() => {
@@ -769,7 +796,7 @@ export default function Home() {
     lines.push("30대(책임 / 구조 형성)");
     lines.push("30대는 책임이 ‘일’에서 ‘생활’로 번져갑니다.");
     lines.push("관계도 일이 되고, 일이 관계가 되는 장면이 늘어요.");
-    lines.push("여기서 ${safeName}님은 사람을 넓히기보다, 사람을 정리하는 쪽이었을 가능성이 큽니다.");
+  lines.push(`${safeName}님은 여기서 사람을 넓히기보다, 사람을 정리하는 쪽으로 마음이 움직였을 거예요.`);
     lines.push("결혼이나 동거 같은 선택도 이 시기에 ‘조건’이 아니라 ‘리듬’으로 판단하게 됩니다.");
     lines.push("같이 있을 때 편해지는 사람, 약속을 지키는 사람, 말이 꼬였을 때 다시 푸는 사람.");
     lines.push("그게 배우자 운의 핵심이고, 그 기준이 안 서면 관계는 오래 버티기 힘들어요.");
@@ -816,7 +843,7 @@ export default function Home() {
     lines.push("");
     lines.push("인생 전체 핵심 메시지");
     const finalLine = def
-      ? `${safeName}님 인생은 ${def}을(를) 채우는 작은 습관이, 직업과 돈과 사랑의 큰 선택을 흔들리지 않게 붙잡아줍니다.`
+      ? `${safeName}님 인생은 ${def}${josa(def, "을를")} 채우는 작은 습관 하나가, 직업과 돈과 사랑의 큰 선택을 흔들리지 않게 붙잡아줍니다.`
       : `${safeName}님 인생은 기준이 선명해지는 순간마다, 직업과 돈과 사랑이 한꺼번에 정렬됩니다.`;
     lines.push(finalLine);
 
