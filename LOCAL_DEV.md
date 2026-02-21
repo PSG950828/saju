@@ -1,11 +1,14 @@
 # 로컬 개발 실행
 
+> 참고: 이 프로젝트(Next.js 14)는 Node **20 LTS**에서 가장 안정적으로 동작합니다.
+> 현재 워크스페이스에 `.nvmrc`를 추가해 두었으니, nvm을 쓰는 경우 `nvm use`로 맞춰주세요.
+
 ## 한 번에 실행 (추천)
 
 프로젝트 루트(`/Users/psg/saju`)에서:
 
 - 프론트 + 백엔드를 동시에 실행
-  - 프론트: http://localhost:3001
+  - 프론트: http://127.0.0.1:3001
   - 백엔드: http://127.0.0.1:8000
 
 ```bash
@@ -23,6 +26,19 @@ npm run stop
 프론트만:
 
 ```bash
+npm run start:frontend
+```
+
+프론트(프로덕션 모드로 확인: build + start):
+
+```bash
+npm run start:frontend:prod
+```
+
+프론트가 실제로 열렸는지 빠른 확인:
+
+```bash
+npm run smoke:frontend
 ```
 
 백엔드만:

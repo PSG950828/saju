@@ -476,6 +476,10 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
+  const closeTenGodModal = () => {
+    setIsModalOpen(false);
+  };
+
   const goToAllTerms = () => {
     setActiveView("terms");
     window.requestAnimationFrame(() => {
@@ -991,22 +995,37 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="term-tags">
+              <div className="ten-god-grid" role="list" aria-label="십성 카드">
                 {tenGodTags.map((term) => (
-                  <div key={term.term} className="term-tag">
-                    <span className="term-title">
-                      {term.term} — {term.strengthLabel}
-                      {term.subtitle ? ` · ${term.subtitle}` : ""}
-                    </span>
-                    <button
-                      type="button"
-                      className="term-info"
-                      aria-label={`${term.term} 설명 보기`}
-                      onClick={() => openTenGodModal(term.term)}
-                    >
+                  <button
+                    key={term.term}
+                    type="button"
+                    role="listitem"
+                    className={`ten-god-card ${
+                      activeTenGod === term.term ? "selected" : ""
+                    }`}
+                    onClick={() => openTenGodModal(term.term)}
+                  >
+                    <div className="ten-god-card-body">
+                      <div className="ten-god-line1">
+                        <span className="ten-god-name">{term.term}</span>
+                        <span className="ten-god-sep">—</span>
+                        <span className={`ten-god-strength ${term.strength}`}>
+                          {term.strengthLabel}
+                        </span>
+                      </div>
+                      <div
+                        className="ten-god-line2"
+                        title={term.subtitle}
+                      >
+                        {term.subtitle}
+                      </div>
+                    </div>
+
+                    <span className="ten-god-info" aria-hidden="true">
                       ⓘ
-                    </button>
-                  </div>
+                    </span>
+                  </button>
                 ))}
               </div>
 
@@ -1194,7 +1213,7 @@ export default function Home() {
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeTenGodModal}
               >
                 ✕ 닫기
               </button>
