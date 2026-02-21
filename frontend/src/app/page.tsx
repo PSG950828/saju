@@ -540,7 +540,7 @@ export default function Home() {
       hash ^= raw.charCodeAt(i);
       hash = Math.imul(hash, 16777619);
     }
-    return `story:v2:${(hash >>> 0).toString(16)}`;
+    return `story:v3:${(hash >>> 0).toString(16)}`;
   };
 
   const generateStory = (params: {
@@ -574,104 +574,280 @@ export default function Home() {
       return "60대 이후";
     })();
 
-    const lines: string[] = [];
+    const clamp = (s: string, max = 44) => {
+      const t = s.trim();
+      if (t.length <= max) return t;
+      return `${t.slice(0, Math.max(0, max - 1)).trim()}…`;
+    };
 
-    lines.push(`${safeName}님의 흐름을 시간 순서대로 따라가볼게요.`);
-    lines.push("한 번에 결론을 내리기보다, 장면을 이어서 보면 더 정확해집니다.");
+    const normalize = (s: string) =>
+      s
+        .replace(/\s+/g, " ")
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .trim();
 
-    lines.push("먼저 어린 시절(0~12세). ");
-    lines.push("빠르게 앞에 나서기보다는, 주변을 읽는 시간이 더 길었을 거예요.");
-    lines.push("사람의 표정, 말투, 분위기 같은 미세한 변화에 민감하게 반응합니다.");
-    lines.push("그래서 스스로를 지키는 방법도 일찍 배웁니다. 말을 아끼는 날이 있었겠죠.");
-    lines.push("그 조용함은 위축이 아니라, 기준을 만드는 시간에 가까워요.");
+    // ❌ 금지/회피 표현들(너무 일반적인 심리/모호한 조언/가능성/설명체 톤)
+    // - 완벽 차단보다는 “서사 톤 유지”를 목표로 강한 중화/제거를 합니다.
+    const redactBannedPhrases = (line: string) => {
+      let s = normalize(line);
 
-    lines.push("10대에는 나만의 리듬을 찾으려는 마음이 커집니다.");
-    lines.push("어른들이 정해둔 답과, 내가 느끼는 답 사이에 틈이 생겨요.");
-    lines.push("그 틈에서 흔들리기보다 관찰이 깊어집니다. 무엇이 나를 불편하게 하는지가 선명해져요.");
-    lines.push("가끔은 말보다 행동으로 보여주고 싶어서, 결과로 증명하는 쪽으로 기울기도 합니다.");
-    lines.push("이 시기에 만들어진 기준이 이후 선택의 울타리가 됩니다.");
+      // 가능성/애매함 줄이기
+      s = s
+        .replace(/(일\s*수\s*있(어요|습니다)|가능(성)?이\s*있(어요|습니다))/g, "입니다")
+        .replace(/(같(아요|습니다)|듯(해요|합니다))/g, "합니다")
+        .replace(/(아마|어쩌면|대체로|보통은|누구나|사람은\s*다)/g, "");
 
-    lines.push("20대는 속도가 붙는 구간이에요. ");
-    lines.push("새로운 사람, 새로운 역할, 새로운 경쟁이 한꺼번에 들어오면서 삶의 레벨이 바뀝니다.");
-    lines.push(`${safeName}님은 무작정 넓히기보다, 나에게 맞는 방식부터 정리하는 쪽이었을 거예요.`);
-    lines.push("크게 실패하는 길은 피하고, 작은 실패를 여러 번 겪으며 감을 잡는 편이 더 잘 맞습니다.");
-    lines.push("돈과 일도 비슷합니다. 한 방보다 지속되는 구조가 있을 때 마음이 편해져요.");
+      // 너무 일반적인 조언 문구(문장 전체면 제거)
+      if (
+        /^(충분히|꾸준히|열심히|너무\s*걱정\s*말고|스스로를\s*믿고|자기계발|긍정)/.test(s)
+      ) {
+        return "";
+      }
 
-    lines.push("30대는 책임의 밀도가 달라집니다. ");
-    lines.push("관계에서도 일에서도, 내가 감당할 수 있는 범위를 스스로 정해야 하는 순간이 많아져요.");
-    lines.push("호의만으로 버티기 어렵고, 규칙이 있어야 편해집니다.");
-    lines.push("기준이 분명해질수록 사람을 가려내는 눈도 선명해져요.");
-    lines.push("관계가 줄어드는 듯 보여도, 사실은 정리되고 있는 겁니다.");
+      // 설명체/정의문처럼 들리는 표현 약화
+      s = s.replace(/~?입니다\s*$/g, (m) => m);
 
-    lines.push(`그리고 지금, ${ageBandLabel}의 중심에 서 있습니다.`);
-    lines.push("이 구간은 삶을 확장할지, 재배치할지 선택의 무게가 커집니다.");
-    lines.push("해야 할 일이 늘어나도 마음이 원하는 건 단순해요. 덜 소모하고 싶습니다.");
+      return s.trim();
+    };
 
-    if (persona) {
-      lines.push(`${safeName}님 성격의 핵심 결은 ‘${persona}’ 쪽으로 정리됩니다.`);
-      lines.push("사람을 대할 때도, 결정을 할 때도, 겉의 말보다 속의 의도를 먼저 확인하죠.");
-    } else {
-      lines.push("겉은 차분해 보여도 속은 계산이 빠릅니다.");
-      lines.push("감정이 올라오는 순간에도 한 번 더 보고, 한 번 더 확인해요.");
-    }
+    const withPeriod = (s: string) => {
+      const t = s.trim();
+      if (t === "") return t;
+      if (/[.!?…]$/.test(t)) return t;
+      return `${t}.`;
+    };
 
-    if (primary) {
-      lines.push(`요즘은 ‘${primary}’이(가) 앞에 서 있어서, 선택의 기준이 더 날카로워집니다.`);
-      lines.push("애매한 제안, 애매한 관계, 애매한 목표가 버티기 힘들어져요.");
-      lines.push("그래서 끊는 게 아니라 선명하게 정리합니다. 남길 것과 흘려보낼 것을요.");
-    } else {
-      lines.push("요즘은 바깥의 평가보다, 안쪽의 기준을 다시 세우는 쪽으로 마음이 갑니다.");
-      lines.push("기준이 세워지는 속도가 늦어도 괜찮아요. 지금은 그게 더 값집니다.");
-    }
+    const pick = (s: string | null) => (s ? clamp(s.replace(/\.$/, "")) : null);
+    const relHint = pick(rel);
+    const moneyHint = pick(money);
+    const healthHint = pick(health);
+    const personaHint = pick(persona);
 
-    lines.push("관계에서는 한 마디가 중요해집니다.");
-    lines.push("짧게 말하면 오해가 남고, 이유를 한 줄만 붙이면 신뢰가 생깁니다.");
-    if (rel) {
-      lines.push(`특히 관계의 흐름은 ${rel} 쪽으로 굽어갑니다.`);
-      lines.push("포인트는 맞다/틀리다가 아니라, 안전하게 이야기할 수 있나예요.");
-    } else {
-      lines.push("상대가 편안해지는 방식에 맞춰 속도를 조절하면 관계가 길어집니다.");
-      lines.push("서로의 리듬을 존중하는 순간, 말이 부드러워져요.");
-    }
+    const jobStyle = primary
+      ? [
+          `‘${primary}’이(가) 앞에 서 있을 때는, 남이 정해준 역할보다 내가 설계한 방식이 더 잘 맞습니다.`,
+          "일은 ‘결정권’이 있는 자리에서 속도가 붙고, 결정권이 없는 환경에서는 피로가 먼저 쌓여요.",
+        ]
+      : [
+          "일은 단번에 뛰어들기보다, 조건을 정리하고 들어갈 때 안정적으로 길게 갑니다.",
+          "조직 안에서도 ‘내 기준’을 세울 수 있는 팀/포지션이 잘 맞아요.",
+        ];
 
-    lines.push("일과 돈은 구조의 문제로 넘어옵니다.");
-    if (money) {
-      lines.push(money.endsWith("다") ? money : `${money}.`);
-      lines.push("성과가 붙을수록 새 요청이 따라오는데, 다 받아내면 체력이 먼저 바닥나요.");
-    } else {
-      lines.push("무엇을 하느냐보다, 어떤 방식으로 반복하느냐가 결과를 바꿉니다.");
-      lines.push("작은 루틴이 없으면 큰 결심만 남고, 큰 결심은 오래 못 가요.");
-    }
+    const jobRole = (() => {
+      if (!def) return "기획·운영·분석·콘텐츠 정리처럼, 구조를 만들고 유지하는 일";
+      if (def.includes("목")) return "기획·전략·브랜딩처럼, 방향을 세우고 ‘시작’을 여는 일";
+      if (def.includes("화")) return "콘텐츠·마케팅·영업처럼, 설득과 확산이 필요한 일";
+      if (def.includes("토")) return "운영·관리·프로덕트처럼, 안정과 지속을 만드는 일";
+      if (def.includes("금")) return "품질·감사·법무/컴플라이언스처럼, 기준과 선을 지키는 일";
+      if (def.includes("수")) return "리서치·데이터·상담/코칭처럼, 흐름을 읽고 해석하는 일";
+      return "구조를 만들고 유지하는 일";
+    })();
 
-    lines.push("몸도 솔직해집니다.");
-    if (health) {
-      lines.push(health.endsWith("다") ? health : `${health}.`);
-      lines.push("몸이 보내는 신호를 무시하면 마음이 먼저 까칠해지고 판단이 날카로워져요.");
-    } else {
-      lines.push("잠과 식사의 주기가 흔들리면 마음이 먼저 예민해집니다.");
-      lines.push("컨디션이 안정되면 생각이 풀리고, 말이 부드러워져요.");
-    }
+    const moneyStyle = (() => {
+      if (moneyHint) return [withPeriod(moneyHint), "돈은 ‘한 번에 크게’보다 ‘흐름을 끊기지 않게’가 핵심이에요."];
+      return [
+        "수입은 한 방보다 반복으로 쌓이는 쪽이 마음을 편하게 합니다.",
+        "단기 수익을 좇을수록 리듬이 깨지기 쉬워서, ‘작은 실험 + 손실 제한’이 잘 맞아요.",
+      ];
+    })();
 
-    if (def) {
-      lines.push(`${safeName}님에게는 ${def} 기운을 보완하는 습관이 지금 더 중요해집니다.`);
-      lines.push("크게 바꾸지 말고, 하루에 한 가지를 고정해보세요.");
-    } else {
-      lines.push("기운의 균형을 조금만 조정해도 삶의 마찰이 눈에 띄게 줄어듭니다.");
-      lines.push("그 여유가 결국 선택의 품질을 올려요.");
-    }
+    const lossPattern = [
+      "손실은 실력이 부족해서라기보다, 기준이 흐려지는 순간에 생깁니다.",
+      "기회가 커 보일수록 ‘내가 잃을 수 있는 한도’부터 먼저 정해야 해요.",
+      "유동 자산은 기동성을 주고, 실물 자산은 마음을 안정시키니 둘을 섞되 비율을 고정하는 편이 좋아요.",
+    ];
 
-    lines.push("이후 흐름(50대 이후)은 사건보다 역할이 핵심이에요.");
-    lines.push("무엇을 더 얻느냐보다, 무엇을 남기고 무엇을 전하느냐가 중요해집니다.");
-    lines.push("경험은 자산이 되고, 말은 기준이 됩니다.");
-    lines.push("내 방식을 지키되, 타인이 따라올 수 있게 정리하는 일이 남아요.");
-    lines.push("가르치거나 설계하거나, 시스템을 만드는 쪽으로 자연스럽게 이어집니다.");
+    const marriageFlow = (() => {
+      const base = [
+        "연애나 결혼은 속도가 아니라 ‘대화의 안전’으로 결정됩니다.",
+        "말을 예쁘게 하는 사람보다, 말이 꼬였을 때 다시 푸는 사람이 오래가요.",
+        "배우자는 기세가 센 사람보다, 생활 감각이 있고 약속을 지키는 사람이 맞습니다.",
+        "결혼 후에는 ‘내가 혼자 책임지는 습관’을 내려놓는 순간 관계가 편해져요.",
+      ];
+      if (relHint) base.splice(1, 0, `관계의 반복 장면은 “${withPeriod(relHint)}” 쪽으로 자주 열릴 거예요.`);
+      return base;
+    })();
 
-    lines.push("마지막으로 한 문장만 남길게요.");
-    lines.push("지금은 더 많이 하는 시기가 아니라, 더 선명해지는 시기입니다.");
+    const familyFlow = [
+      "자녀/가족을 대할 때는 훈계보다 ‘규칙을 함께 세우는 방식’이 잘 먹힙니다.",
+      "엄하게 보이더라도, 사실은 지켜주고 싶어서 기준을 세우는 쪽에 가깝습니다.",
+      "부모 역할은 ‘다 해주는 사람’이 아니라, ‘스스로 하게 만드는 사람’으로 남아요.",
+    ];
 
-    return lines
+    const realEstateFlow = [
+      "재산과 부동산은 화려한 타이밍보다, 컨디션과 생활 리듬이 안정되는 시점에 힘이 붙습니다.",
+      "이동이 잦은 시기에는 유동성을, 정착이 필요한 시기에는 생활권을 먼저 잡는 게 손실을 줄여요.",
+      "집은 투자이기도 하지만, ${safeName}님에게는 ‘마음을 눕히는 자리’이기도 합니다.",
+    ];
+
+    const stressFlow = (() => {
+      const base = [
+        "압박이 커지면 표정은 조용해지는데, 속은 더 빨라집니다.",
+        "그때 가장 위험한 건 감정이 아니라, ‘혼자 떠안는 습관’이에요.",
+        "회복은 마음을 달래는 말보다, 수면/식사/호흡 같은 기본 리듬을 되돌리는 게 빠릅니다.",
+      ];
+      if (healthHint) base.splice(2, 0, `몸의 신호는 “${withPeriod(healthHint)}” 쪽에서 먼저 올라옵니다.`);
+      return base;
+    })();
+
+    const futureFlow40 = [
+      "40대 이후는 ‘확장’보다 ‘선택’이 힘이 됩니다.",
+      "무엇을 더 하느냐보다, 무엇을 줄였을 때 에너지가 살아나는지 알게 돼요.",
+      ...jobStyle,
+      "이때는 조직형/독립형 중 하나로 크게 갈리기보다, ‘결정권이 있는 자리’로 이동하는 게 핵심이 됩니다.",
+      "돈도 비슷해요. 공격보다 방어가 앞서야, 결과가 길게 남습니다.",
+    ];
+
+    const roleAfter50 = [
+      "50대 이후는 사건보다 역할의 변화가 더 크게 느껴질 거예요.",
+      "내가 직접 뛰는 시간에서, 사람과 구조를 움직이는 시간으로 무게중심이 옮겨갑니다.",
+      "가르치거나 설계하거나, 운영하고 정리하는 쪽에서 이름이 남는 흐름이 들어와요.",
+      "그래서 후반에는 ‘내 경험을 타인이 쓰게 만드는 정리’가 가장 값집니다.",
+    ];
+
+    const nowBand = [
+      `그리고 지금, ${ageBandLabel}의 중심에 서 있습니다.`,
+      "여기서부터는 운이 아니라 선택의 축이 바뀝니다.",
+      "이제는 ‘더 하는 사람’보다 ‘덜 소모하는 사람’이 오래 갑니다.",
+      personaHint
+        ? `${safeName}님을 한 줄로 붙잡으면, “${withPeriod(personaHint)}” 같은 결이에요.`
+        : "겉은 차분해도, 속은 단번에 본질을 잡아내는 편입니다.",
+      primary
+        ? `요즘 ‘${primary}’이(가) 전면에 서 있어서, 애매한 말과 애매한 약속이 더 힘들게 느껴져요.`
+        : "요즘은 바깥의 평가보다 안쪽의 기준을 다시 세우는 쪽으로 마음이 갑니다.",
+      "관계에서는 한 문장만 더 붙이면 오해가 줄고, 대화의 온도가 달라집니다.",
+      relHint
+        ? `특히 관계는 “${withPeriod(relHint)}” 장면이 반복되기 쉬우니, ‘기준’을 먼저 공유하는 편이 좋아요.`
+        : "관계는 맞다/틀리다보다, 안전하게 말할 수 있느냐가 오래 가는 기준이 됩니다.",
+      "일은 지금이 ‘커리어를 정리하는 시기’가 아니라, ‘커리어를 다시 배치하는 시기’예요.",
+      `맞는 직무 결은 ${jobRole} 쪽으로 잡히고, 그 일을 할 때 컨디션이 먼저 살아납니다.`,
+      ...moneyStyle,
+      ...lossPattern,
+      ...stressFlow,
+      def
+        ? `${safeName}님은 지금 ${def} 기운을 보완하는 습관이 인생 전체를 덜 흔들리게 잡아줍니다.`
+        : "지금은 작은 루틴 하나가, 생각보다 큰 변화를 만들어냅니다.",
+    ];
+
+  const lines: string[] = [];
+
+    // 서사 시작(제목 없이)
+    lines.push(`${safeName}님 이야기는 ‘성격’에서 끝나지 않아요.`);
+    lines.push("삶이 어떻게 흘러왔는지, 그리고 어디서 방향이 바뀌는지부터 잡아볼게요.");
+    lines.push("장면을 따라가다 보면 직업, 돈, 관계, 가족, 재산까지 연결이 보입니다.");
+
+    // 1) 어린 시절
+    lines.push("");
+    lines.push("어린 시절(0~12세)");
+    lines.push("어릴 때는 앞에 나서기보다, 주변을 조용히 읽는 시간이 길었을 거예요.");
+    lines.push("눈치가 빠르다는 말보다, ‘분위기를 먼저 느끼는 아이’에 가까웠습니다.");
+    lines.push("그래서 보호받을 때도 있었고, 혼자 버틴 날도 있었겠죠.");
+    lines.push("그 시절에 만들어진 기준이, 나중에 돈을 쓰는 방식과 사람을 고르는 방식까지 이어집니다.");
+
+    // 2) 10대
+    lines.push("");
+    lines.push("10대(정체성 형성)");
+    lines.push("10대에는 남들이 말하는 ‘정답’이 부담으로 느껴졌을 수 있어요.");
+    lines.push("그래서 더 조용히, 더 정확히 보려고 했습니다.");
+    lines.push("누구와 붙어 있을 때 숨이 쉬어지는지, 어떤 말이 나를 무너뜨리는지.");
+    lines.push("그걸 알아내는 시기였고, 그 경험이 이후 연애나 결혼 선택에도 영향을 줍니다.");
+
+    // 3) 20대
+    lines.push("");
+    lines.push("20대(사회 진입 / 방향 탐색)");
+    lines.push("20대는 사회의 속도를 처음으로 몸으로 맞는 구간이에요.");
+    lines.push("처음엔 뭐든 할 수 있을 것 같다가도, 어느 순간 ‘내 방식’이 필요해집니다.");
+  lines.push("그때부터는 남의 이름이 아니라, 내 이름으로 책임을 지는 경험이 늘어납니다.");
+    lines.push("일은 여기서 방향을 틀기 시작해요. ‘좋아 보이는 일’보다 ‘내가 오래 버티는 일’을 찾게 됩니다.");
+    lines.push(`그때 맞는 결은 ${jobRole}처럼, 구조를 만들고 쌓아가는 쪽이에요.`);
+    lines.push("돈도 비슷합니다. 급하게 벌면 급하게 빠져나가고, 흐름을 만들면 남습니다.");
+    lines.push("이 시기에 생긴 소비/투자 습관이, 30대의 재산 흐름을 결정해요.");
+
+    // 4) 30대
+    lines.push("");
+    lines.push("30대(책임 / 구조 형성)");
+    lines.push("30대는 책임이 ‘일’에서 ‘생활’로 번져갑니다.");
+    lines.push("관계도 일이 되고, 일이 관계가 되는 장면이 늘어요.");
+    lines.push("여기서 ${safeName}님은 사람을 넓히기보다, 사람을 정리하는 쪽이었을 가능성이 큽니다.");
+    lines.push("결혼이나 동거 같은 선택도 이 시기에 ‘조건’이 아니라 ‘리듬’으로 판단하게 됩니다.");
+    lines.push("같이 있을 때 편해지는 사람, 약속을 지키는 사람, 말이 꼬였을 때 다시 푸는 사람.");
+    lines.push("그게 배우자 운의 핵심이고, 그 기준이 안 서면 관계는 오래 버티기 힘들어요.");
+    lines.push("재산도 마찬가지입니다. 이때부터는 실물/유동의 비율을 고정하는 순간 안정감이 생겨요.");
+
+    // 5) 현재
+    lines.push("");
+    lines.push("현재 시기(핵심 변화 포인트)");
+    nowBand.forEach((l) => lines.push(l));
+
+  // ✔ 반드시 들어가야 하는 현실 항목(요구 강제)
+  lines.push("");
+  lines.push("직업 방향 / 관계 유형 / 선택 방식");
+  lines.push(`직업은 ${jobRole}처럼, 성과보다 구조가 남는 쪽으로 잡아야 길이 열립니다.`);
+  lines.push("관계는 감정의 크기보다 약속의 밀도가 기준이 되고, 그 기준이 서면 사람이 남습니다.");
+  lines.push("선택은 ‘더 좋은 것’이 아니라 ‘더 덜 소모되는 것’을 고르는 쪽이 정답에 가깝습니다.");
+
+  lines.push("");
+  lines.push("실패 패턴 / 성공 조건 / 미래 변화");
+  lines.push("실패는 능력 부족이 아니라, 기준이 흐려질 때(돈/관계/시간) 동시에 터지는 패턴으로 옵니다.");
+  lines.push("성공은 속도가 아니라 반복입니다. 작게 해도 끊기지 않는 루틴이 결국 결과를 만들어요.");
+  lines.push("미래 변화는 ‘환경이 바뀌는 것’보다 ‘내 역할이 바뀌는 것’으로 크게 옵니다.");
+    lines.push("");
+    lines.push("결혼 / 배우자 흐름");
+    marriageFlow.forEach((l) => lines.push(l));
+    lines.push("");
+    lines.push("자식 / 가족");
+    familyFlow.forEach((l) => lines.push(l));
+    lines.push("");
+    lines.push("부동산 / 재산 흐름");
+    realEstateFlow.forEach((l) => lines.push(l));
+
+    // 6) 40대 이후
+    lines.push("");
+    lines.push("40대 이후 흐름");
+    futureFlow40.forEach((l) => lines.push(l));
+
+    // 7) 50대 이후
+    lines.push("");
+    lines.push("50대 이후 역할 변화");
+    roleAfter50.forEach((l) => lines.push(l));
+
+    // 8) 인생 전체 핵심 메시지(1문장)
+    lines.push("");
+    lines.push("인생 전체 핵심 메시지");
+    const finalLine = def
+      ? `${safeName}님 인생은 ${def}을(를) 채우는 작은 습관이, 직업과 돈과 사랑의 큰 선택을 흔들리지 않게 붙잡아줍니다.`
+      : `${safeName}님 인생은 기준이 선명해지는 순간마다, 직업과 돈과 사랑이 한꺼번에 정렬됩니다.`;
+    lines.push(finalLine);
+
+    // 라인 후처리(이름 치환 잔재 방지 + 연속 중복 제거)
+    const cleaned = lines
       .map((line) => line.replace(/\$\{name\}/g, safeName))
+      .map((line) => redactBannedPhrases(line))
+      .map((line) => line.trimEnd())
       .filter((line) => line.trim() !== "");
+
+    const deduped: string[] = [];
+    for (const line of cleaned) {
+      const prev = deduped[deduped.length - 1];
+      if (prev && prev === line) continue;
+      deduped.push(line);
+    }
+
+    // 최소 40줄 보장(부족하면 현재 파트의 문장 몇 개를 추가)
+    if (deduped.length < 40) {
+      const filler = [
+        "지금은 선택이 늦어지는 게 문제가 아니라, 선택의 기준이 흔들리는 게 문제예요.",
+        "기준이 서면 속도가 붙고, 속도가 붙으면 돈과 관계의 소모가 줄어듭니다.",
+        "그래서 오늘은 ‘내가 지킬 한 가지’부터 정하는 게 가장 현실적인 시작입니다.",
+      ];
+      for (const f of filler) {
+        if (deduped.length >= 40) break;
+        deduped.splice(Math.min(deduped.length, 22), 0, f);
+      }
+    }
+
+    return deduped;
   };
 
   const handleShare = async () => {
