@@ -41,6 +41,309 @@ p {
   line-height: 1.6;
 }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  background: rgba(27, 31, 36, 0.92);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 1.2;
+  z-index: 90;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* 결과 화면: 상단 프로필 요약 바 */
+.result-topbar {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  background: rgba(246, 245, 242, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(27, 31, 36, 0.08);
+  border-radius: 18px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.result-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.result-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.16), rgba(108, 92, 231, 0.05));
+  border: 1px solid rgba(108, 92, 231, 0.20);
+  display: grid;
+  place-items: center;
+  color: rgba(108, 92, 231, 0.9);
+  font-weight: 900;
+}
+
+.result-topbar-text {
+  min-width: 0;
+}
+
+.result-name {
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-meta {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-topbar-actions {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text);
+  border: 1px solid rgba(27, 31, 36, 0.10);
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 750;
+  box-shadow: 0 8px 18px rgba(27, 31, 36, 0.06);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.icon-btn:hover {
+  filter: brightness(0.99);
+}
+
+.icon-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(27, 31, 36, 0.06);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid rgba(108, 92, 231, 0.45);
+  outline-offset: 3px;
+}
+
+/* 오행 + 균형 상태: 1줄 좌측 정렬 */
+.element-balance-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.element-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 650;
+  color: rgba(45, 52, 54, 0.92);
+}
+
+.element-inline .dot {
+  color: rgba(99, 110, 114, 0.55);
+  font-weight: 900;
+}
+
+.balance-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(108, 92, 231, 0.22);
+  background: rgba(108, 92, 231, 0.10);
+  color: rgba(45, 52, 54, 0.96);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* 스토리형 해석 */
+.story-section {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  box-shadow: 0 10px 26px rgba(27, 31, 36, 0.06);
+}
+
+.story-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.story-header h3 {
+  font-size: 16px;
+  font-weight: 850;
+  color: var(--text);
+}
+
+.ghost-btn {
+  background: rgba(108, 92, 231, 0.10);
+  color: rgba(72, 52, 212, 1);
+  border: 1px solid rgba(108, 92, 231, 0.18);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ghost-btn:active {
+  transform: translateY(1px);
+}
+
+.story-body p {
+  color: rgba(45, 52, 54, 0.78);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 8px;
+}
+
+/* 생활 가이드 카드 */
+.guide-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 18px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 10px 26px rgba(27, 31, 36, 0.05);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.guide-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(27, 31, 36, 0.07);
+}
+
+.guide-card h4 {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.guide-card p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(45, 52, 54, 0.78);
+  margin-top: 6px;
+}
+
+/* 인생 흐름(10년 단위) 상호작용 보강 */
+.luck-card {
+  text-align: left;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(27, 31, 36, 0.09);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 10px 26px rgba(27, 31, 36, 0.05);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.luck-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(27, 31, 36, 0.07);
+}
+
+.luck-card:active {
+  transform: translateY(-1px);
+}
+
+.luck-card.selected {
+  border-color: rgba(108, 92, 231, 0.35);
+  box-shadow: 0 14px 36px rgba(108, 92, 231, 0.12);
+}
+
+.luck-card.selected .pillar-meta {
+  color: rgba(72, 52, 212, 0.85);
+}
+
+.luck-detail {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.10), rgba(108, 92, 231, 0.04));
+  border: 1px solid rgba(108, 92, 231, 0.20);
+}
+
+.luck-detail-title {
+  font-weight: 900;
+  color: var(--text);
+}
+
+.luck-detail-body {
+  margin-top: 8px;
+  color: rgba(45, 52, 54, 0.78);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.luck-detail-foot {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: rgba(99, 110, 114, 0.9);
+}
+
+@media (max-width: 980px) {
+  .guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .result-topbar {
+    top: 6px;
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .result-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 form {
   display: grid;
   gap: 16px;
@@ -475,6 +778,117 @@ button:disabled {
   overflow: auto;
 }
 
+
+/* --- Ten God modal: expert summary layout --- */
+
+.tg-modal-hero {
+  padding: 14px 14px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(108, 92, 231, 0.16),
+    rgba(108, 92, 231, 0.06)
+  );
+  border: 1px solid rgba(108, 92, 231, 0.28);
+}
+
+.tg-modal-hero-title {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-weight: 900;
+  color: rgba(45, 52, 54, 0.75);
+}
+
+.tg-modal-hero-text {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.tg-modal-traits {
+  display: grid;
+  gap: 8px;
+}
+
+.tg-modal-section-title {
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.tg-trait-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tg-trait-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 31, 36, 0.10);
+  background: rgba(27, 31, 36, 0.04);
+  font-size: 12px;
+  font-weight: 850;
+  color: rgba(27, 31, 36, 0.78);
+}
+
+.tg-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tg-modal-card {
+  border: 1px solid rgba(27, 31, 36, 0.10);
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+  padding: 12px 12px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tg-modal-card-title {
+  font-size: 12px;
+  font-weight: 950;
+  color: rgba(45, 52, 54, 0.82);
+}
+
+.tg-modal-card-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(45, 52, 54, 0.92);
+}
+
+.tg-modal-list {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  padding-left: 0;
+  margin: 0;
+}
+
+.tg-modal-list li {
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(45, 52, 54, 0.92);
+}
+
+.tg-modal-action {
+  grid-column: 1 / -1;
+  background: rgba(108, 92, 231, 0.08);
+  border-color: rgba(108, 92, 231, 0.22);
+}
+
+@media (max-width: 520px) {
+  .tg-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .modal-highlight {
   background: rgba(108, 92, 231, 0.08);
   border: 1px solid rgba(108, 92, 231, 0.2);

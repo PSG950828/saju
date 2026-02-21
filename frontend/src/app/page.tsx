@@ -273,114 +273,114 @@ const tenGodEducation = [
 
 const tenGodDetails: Record<string, TenGodDetail> = {
   비견: {
-    highlight: "비견 비중이 높으면 독립성과 주도성이 강한 흐름이 나타납니다.",
-    profile: "스스로 결정하고 책임지는 상황에서 에너지가 살아납니다. 혼자서도 안정적으로 움직이는 편입니다.",
-    strengths: ["결정이 빠름", "자립적인 실행", "위기에서도 흔들리지 않음"],
-    risks: ["의견 충돌", "타협을 늦게 함", "도움 요청을 미룸"],
-    relationship: "협업에서도 주도권을 잡는 편이라 역할 분담을 명확히 하면 갈등이 줄어듭니다.",
-    moneyWork: "혼자 진행하는 프로젝트나 개인 브랜드에서 성과가 잘 나옵니다.",
-    stress: "통제권이 없을 때 스트레스를 크게 느끼며, 혼자 해결하려는 경향이 강해집니다.",
-    growth: "협업 시 ‘합의 기준’을 먼저 정하면 에너지가 덜 소모됩니다.",
-    action: "오늘 중요한 결정 1개를 스스로 정하고, 공유가 필요한 부분만 체크리스트로 합의해보세요.",
+    highlight: "주도권을 잡을 때 성과가 빠르게 나는 ‘독립형 추진’ 타입.",
+    profile: "스스로 정하고 책임질 때 집중력이 올라갑니다.",
+    strengths: ["결정 속도", "자립 실행", "위기 대응"],
+    risks: ["고집/충돌", "협의 지연", "도움 요청 미룸"],
+    relationship: "역할·권한이 명확하면 협업이 매끄럽습니다.",
+    moneyWork: "개인 프로젝트/프리랜스 성격의 일에서 성과가 잘 납니다.",
+    stress: "통제권이 줄면 예민해지고 ‘혼자 해결’로 고립되기 쉽습니다.",
+    growth: "합의 기준(결정권/마감/품질)을 먼저 박아두면 에너지 소모가 줄어요.",
+    action: "오늘 결정 1개를 먼저 확정 → 공유가 필요한 항목만 3줄로 합의하세요.",
   },
   겁재: {
-    highlight: "겁재 비중이 높으면 도전과 추진의 에너지가 강하게 드러납니다.",
-    profile: "새로운 시도를 즐기며 승부욕이 강한 편입니다. 속도가 빠르지만 리듬 조절이 필요합니다.",
-    strengths: ["도전 정신", "추진력", "빠른 반응"],
-    risks: ["무리한 결정", "속도 과다", "계획 누락"],
-    relationship: "직선적인 표현이 많아 오해가 생기기 쉬우니 상황 설명을 덧붙이면 좋습니다.",
-    moneyWork: "성과를 빠르게 내는 작업에 강하지만, 리스크 관리를 같이 해야 안정적입니다.",
-    stress: "속도가 막히면 답답함을 크게 느끼며 즉흥적인 선택이 늘어납니다.",
-    growth: "속도보다 ‘안정 기준’을 먼저 정하면 장기적으로 성과가 커집니다.",
-    action: "오늘 결정할 일에 대해 리스크 2가지를 적고 시작해보세요.",
+    highlight: "승부·도전의 압력을 ‘가속’으로 바꾸는 돌파형.",
+    profile: "속도가 빠르고 경쟁 상황에서 퍼포먼스가 올라갑니다.",
+    strengths: ["도전 드라이브", "추진 속도", "즉시 대응"],
+    risks: ["무리수", "계획 생략", "과열/피로"],
+    relationship: "직설적이라 오해가 나기 쉬워 ‘의도’를 한 줄 덧붙이면 좋아요.",
+    moneyWork: "단기 성과·런칭·영업형 과제에 강하지만 리스크 체크가 필수입니다.",
+    stress: "막히면 즉흥 결정을 늘려 손실을 키우기 쉽습니다.",
+    growth: "시작 전에 ‘중단 기준/예산/마감’ 3가지만 고정하세요.",
+    action: "오늘 하는 일에 리스크 2개 + 중단 기준 1개를 먼저 적고 시작하세요.",
   },
   식신: {
-    highlight: "식신 비중이 높으면 표현과 활동성이 자연스럽게 강조됩니다.",
-    profile: "몸으로 움직이고 말로 표현할 때 에너지가 살아나는 타입입니다.",
-    strengths: ["표현력", "활동성", "친화력"],
-    risks: ["일 과다", "에너지 소진", "일정 과포화"],
-    relationship: "사람들과 자연스럽게 어울리지만, 감정 표현이 강할 때 과열될 수 있습니다.",
-    moneyWork: "기획/콘텐츠/서비스처럼 ‘보이는 결과’를 만드는 일에 강합니다.",
-    stress: "활동량이 줄어들면 무기력감이 커질 수 있습니다.",
-    growth: "활동과 휴식을 함께 설계하면 지속력이 높아집니다.",
-    action: "오늘 전달하고 싶은 메시지 1개를 정해서 표현해보세요.",
+    highlight: "움직이고 표현할수록 운이 트이는 ‘실행·표현형’.",
+    profile: "행동과 표현이 곧 에너지입니다.",
+    strengths: ["표현력", "실행력", "분위기 메이킹"],
+    risks: ["과다 일정", "피로 누적", "집중 분산"],
+    relationship: "친화적이지만 감정이 과열되면 말이 앞서기 쉽습니다.",
+    moneyWork: "콘텐츠/서비스처럼 결과물이 보이는 일에서 강합니다.",
+    stress: "멈추면 무기력, 과하게 달리면 번아웃으로 나타납니다.",
+    growth: "일정에 ‘휴식 슬롯’을 고정하면 지속력이 확 올라가요.",
+    action: "오늘 전달할 메시지 1개를 정해 ‘짧게’ 표현하세요.",
   },
   상관: {
-    highlight: "상관 비중이 높으면 창의적 돌파 성향이 강하게 나타납니다.",
-    profile: "새로운 방식을 찾아내는 데 능하며 규칙을 넘어서는 시도가 많습니다.",
-    strengths: ["창의적 사고", "돌파력", "문제 해결 능력"],
-    risks: ["충동적 결정", "규칙 무시", "마무리 느슨"],
-    relationship: "직설적인 의견이 많아 조율이 필요합니다. 기준을 공유하면 협업이 부드러워집니다.",
-    moneyWork: "새로운 시도를 하는 업무에 강하지만, 완성도를 관리해야 합니다.",
-    stress: "제약이 많을수록 스트레스를 크게 느낍니다.",
-    growth: "아이디어를 실행 전 ‘필요성’ 기준으로 필터링하면 성과가 높아집니다.",
-    action: "오늘 아이디어 1개를 선택해 실행 기준을 3줄로 적어보세요.",
+    highlight: "규칙을 깨서 길을 여는 ‘창의적 돌파’ 타입.",
+    profile: "새 방식을 설계하고 막힌 문제를 푸는 데 강합니다.",
+    strengths: ["아이디어", "돌파", "문제 해결"],
+    risks: ["충동","마무리 약함","규칙 충돌"],
+    relationship: "직설적이어서, 기준(목표/우선순위)을 공유하면 갈등이 줄어요.",
+    moneyWork: "신규 기획·개선·실험 과제에 강하지만 마감/품질 관리가 필요합니다.",
+    stress: "제약이 많아질수록 반발심·평가 민감도가 올라갑니다.",
+    growth: "아이디어는 실행 전에 ‘필요/효과/비용’ 3항목으로 필터링하세요.",
+    action: "오늘 아이디어 1개만 뽑아 실행 기준을 3줄로 적으세요.",
   },
   "편재": {
-    highlight: "편재 비중이 높으면 ‘활동형 재물’ 흐름이 강합니다.",
-    profile: "움직이며 수익을 만드는 스타일이라 기회 포착이 빠릅니다.",
-    strengths: ["사업 감각", "기회 포착", "빠른 회전"],
-    risks: ["수입 변동", "지출 과다", "계획 부족"],
-    relationship: "사람을 넓게 만나며 정보 교류를 활발히 합니다.",
-    moneyWork: "영업/프로젝트/사업형 업무에서 성과가 좋습니다.",
-    stress: "성과가 즉시 보이지 않으면 불안감이 커집니다.",
-    growth: "수입과 지출의 리듬을 기록하면 안정감이 올라갑니다.",
-    action: "오늘 수입/지출 1건씩 기록해 흐름을 확인해보세요.",
+    highlight: "기회를 잡아 ‘현금흐름’으로 바꾸는 활동형 재물.",
+    profile: "사람·정보·현장을 움직일수록 수익 기회가 열립니다.",
+    strengths: ["기회 포착", "영업 감각", "회전력"],
+    risks: ["수입 변동", "지출 확대", "기록 부재"],
+    relationship: "네트워크를 넓히고 정보 교류가 활발합니다.",
+    moneyWork: "영업/프로젝트/사업형 업무에서 성과가 빠릅니다.",
+    stress: "성과가 안 보이면 불안해져 지출로 풀기 쉽습니다.",
+    growth: "수입·지출을 ‘주 1회’만이라도 고정 기록하세요.",
+    action: "오늘 수입/지출 1건씩만 기록해 흐름을 잡으세요.",
   },
   정재: {
-    highlight: "정재 비중이 높으면 안정적이고 축적형 재물 성향이 강합니다.",
-    profile: "계획적으로 쌓아가는 스타일이며 안정성을 중시합니다.",
-    strengths: ["계획성", "지속력", "안정 추구"],
-    risks: ["기회 놓침", "변화 회피", "속도 부족"],
-    relationship: "신뢰 기반 관계를 선호하며 약속을 잘 지키는 편입니다.",
-    moneyWork: "장기 프로젝트, 안정적인 직무에서 성과가 잘 나옵니다.",
-    stress: "예상 밖 변수가 생기면 불안감을 크게 느낍니다.",
-    growth: "작은 도전 계획을 섞으면 성장 속도가 빨라집니다.",
-    action: "오늘의 지출/저축을 3줄로 정리해보세요.",
+    highlight: "꾸준히 쌓아 ‘안정 자산’을 만드는 축적형 재물.",
+    profile: "계획·관리·루틴에서 힘이 납니다.",
+    strengths: ["계획성", "지속력", "리스크 최소화"],
+    risks: ["기회 회피", "변화 둔감", "속도 느림"],
+    relationship: "신뢰 기반, 약속을 잘 지키는 편입니다.",
+    moneyWork: "장기 프로젝트·운영/관리형 업무에서 강합니다.",
+    stress: "변수가 생기면 불안이 커져 과잉 통제로 가기 쉽습니다.",
+    growth: "작은 도전을 ‘주 단위’로 1개씩 넣어 탄력성을 키우세요.",
+    action: "오늘 지출/저축을 3줄로만 정리해 기준을 만드세요.",
   },
   "편관(칠살)": {
-    highlight: "편관(칠살) 비중이 높으면 결단력과 긴장감이 강하게 나타납니다.",
-    profile: "위기 대응이 빠르고 승부를 걸 때 에너지가 상승합니다.",
-    strengths: ["결단력", "위기 대응", "승부욕"],
-    risks: ["피로 누적", "과열", "휴식 부족"],
-    relationship: "직접적인 표현이 많아 강하게 느껴질 수 있습니다.",
-    moneyWork: "성과 압박이 큰 업무에서 집중력이 강합니다.",
-    stress: "압박이 클수록 빠른 결정을 반복해 피로가 쌓입니다.",
-    growth: "결정 전에 1단계 점검을 넣으면 안정성이 높아집니다.",
-    action: "오늘 중요한 결정을 하나 골라 24시간 숙고 규칙을 적용해보세요.",
+    highlight: "압박에서 강해지는 ‘결단·승부’ 타입.",
+    profile: "위기 상황에서 집중력과 결단이 올라갑니다.",
+    strengths: ["결단", "위기 대응", "성과 집착"],
+    risks: ["과열", "피로 누적", "휴식 부족"],
+    relationship: "강하게 말해 상대가 압박을 느낄 수 있어 톤 조절이 필요합니다.",
+    moneyWork: "성과 압박이 큰 업무에서 집중력이 좋습니다.",
+    stress: "압박이 커질수록 ‘속결’이 늘어 실수가 나기 쉽습니다.",
+    growth: "결정 전에 10분 점검(리스크/대안/마감)을 넣어 안정화하세요.",
+    action: "오늘 큰 결정 1개는 ‘10분 점검’ 후 실행하세요.",
   },
   정관: {
-    highlight: "정관 비중이 높으면 책임과 신뢰의 성향이 강하게 나타납니다.",
-    profile: "규칙을 지키며 안정적인 흐름을 만드는 데 능합니다.",
-    strengths: ["책임감", "규칙 준수", "신뢰 확보"],
+    highlight: "질서와 신뢰로 결과를 만드는 ‘책임·안정’ 타입.",
+    profile: "규칙/프로세스가 있을 때 성과가 안정적입니다.",
+    strengths: ["책임감", "신뢰", "프로세스 운영"],
     risks: ["완벽주의", "자기검열", "속도 저하"],
-    relationship: "약속을 중시하며 안정적인 관계를 선호합니다.",
-    moneyWork: "정해진 프로세스를 지키는 업무에서 성과가 안정적으로 나옵니다.",
-    stress: "기준이 흔들리면 불안이 커집니다.",
-    growth: "완벽보다 ‘충분히 좋은 기준’을 세우면 에너지 소모가 줄어듭니다.",
-    action: "오늘 기준을 하나 정하고, 80%만 채워도 완료로 처리해보세요.",
+    relationship: "약속을 중시하고 안정적인 관계를 선호합니다.",
+    moneyWork: "규정/품질/리스크 관리가 필요한 일에서 강합니다.",
+    stress: "기준이 흔들리면 불안이 커지고 통제 욕구가 올라갑니다.",
+    growth: "‘충분히 좋은 기준(80%)’을 정해 반복 실행하세요.",
+    action: "오늘 기준 1개를 정하고 80%면 완료로 처리하세요.",
   },
   편인: {
-    highlight: "편인 비중이 높으면 직관과 분석력이 강하게 나타납니다.",
-    profile: "깊게 생각하고 통찰하는 능력이 뛰어나며 분석을 즐깁니다.",
-    strengths: ["분석력", "통찰", "깊은 사고"],
-    risks: ["실행 지연", "과도한 고민", "결정 피로"],
-    relationship: "거리감을 유지하며 관찰하는 편이라 솔직한 표현이 필요합니다.",
-    moneyWork: "리서치, 분석, 기획 등 깊이 있는 업무에 강합니다.",
-    stress: "생각이 많아질수록 피로가 누적됩니다.",
-    growth: "생각을 행동으로 옮기는 작은 단계가 필요합니다.",
-    action: "생각 중인 아이디어를 1단계 행동으로 쪼개보세요.",
+    highlight: "통찰로 방향을 잡는 ‘직관·분석’ 타입.",
+    profile: "깊게 파고들수록 판단 품질이 올라갑니다.",
+    strengths: ["분석", "통찰", "전략 사고"],
+    risks: ["실행 지연", "과잉 고민", "결정 피로"],
+    relationship: "관찰형이라 감정을 표현하지 않으면 거리감이 생깁니다.",
+    moneyWork: "리서치/분석/전략 기획에서 강합니다.",
+    stress: "생각이 과열되면 수면·집중이 무너집니다.",
+    growth: "결정은 ‘작은 실험’으로 바꾸면 실행이 쉬워져요.",
+    action: "아이디어를 ‘첫 행동 1개’로 쪼개 오늘 실행하세요.",
   },
   정인: {
-    highlight: "정인 비중이 높으면 보호와 학습 성향이 강하게 나타납니다.",
-    profile: "안정과 배움을 중시하며 안전한 환경에서 에너지가 살아납니다.",
-    strengths: ["학습력", "배려", "안정성"],
-    risks: ["변화 회피", "소극적 선택", "속도 저하"],
-    relationship: "상대의 감정을 잘 읽고 배려하지만, 표현은 조심스러운 편입니다.",
-    moneyWork: "지속적으로 쌓아가는 업무에서 성과가 잘 나옵니다.",
-    stress: "불확실성이 커지면 소극적으로 변할 수 있습니다.",
-    growth: "새로운 경험을 작은 단위로 넣어 변화 감각을 키우는 게 좋습니다.",
-    action: "오늘은 새로운 정보를 1개만 더 공부해보세요.",
+    highlight: "안정과 학습으로 기반을 만드는 ‘보호·축적’ 타입.",
+    profile: "안전한 환경에서 집중력이 올라갑니다.",
+    strengths: ["학습", "배려", "안정 운영"],
+    risks: ["변화 회피", "소극성", "속도 저하"],
+    relationship: "배려가 강하지만 표현이 조심스러워 오해가 나기 쉽습니다.",
+    moneyWork: "지속적으로 쌓아가는 업무(교육/운영/지원)에 강합니다.",
+    stress: "불확실성이 커지면 움츠러들고 선택이 느려집니다.",
+    growth: "새 경험을 ‘작은 단위’로 넣어 변화 근육을 키우세요.",
+    action: "오늘 새 정보를 1개만 학습하고 메모 3줄로 정리하세요.",
   },
 };
 
@@ -457,6 +457,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [lastRequestUrl, setLastRequestUrl] = useState<string | null>(null);
   const [lastRequestAt, setLastRequestAt] = useState<string | null>(null);
   const [lastRequestTimeoutMs, setLastRequestTimeoutMs] = useState<number | null>(null);
@@ -468,16 +469,61 @@ export default function Home() {
   const [activeView, setActiveView] = useState<"analysis" | "terms">("analysis");
   const [activeTenGod, setActiveTenGod] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [storyExpanded, setStoryExpanded] = useState(false);
+  const [selectedLuckAge, setSelectedLuckAge] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
   const termsSectionRef = useRef<HTMLElement | null>(null);
 
   const openTenGodModal = (term: string) => {
+    lastFocusedElementRef.current = document.activeElement as HTMLElement | null;
     setActiveTenGod(term);
     setIsModalOpen(true);
   };
 
   const closeTenGodModal = () => {
     setIsModalOpen(false);
+  };
+
+  const formatBirthInfo = () => {
+    const date = original?.birth_date ?? "생년월일 미상";
+    const timeRaw = original?.birth_time;
+    const time = !timeRaw || timeRaw === "" ? "출생시간 미상" : timeRaw;
+    const genderLabel = form.gender === "M" ? "남" : form.gender === "F" ? "여" : "-";
+    return `${date} · ${genderLabel} · ${time}`;
+  };
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const title = "Dream Insight · 사주 결과";
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+    } catch {
+      // 사용자가 공유를 취소한 경우 등은 무시
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setToastMessage("링크를 복사했어요.");
+      window.setTimeout(() => setToastMessage(null), 1700);
+    } catch {
+      setToastMessage("복사에 실패했어요. 주소창 링크를 사용해 주세요.");
+      window.setTimeout(() => setToastMessage(null), 2000);
+    }
+  };
+
+  const handleReInput = () => {
+    setResult(null);
+    setOriginal(null);
+    setError(null);
+    setOriginalError(null);
+    setActiveTenGod(null);
+    closeTenGodModal();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goToAllTerms = () => {
@@ -495,6 +541,43 @@ export default function Home() {
     !isProd ||
     (typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("debug") === "1");
+
+  const buildStoryLines = (
+    summary: AnalysisResponse["summary"],
+    personalitySeed: string | null,
+    primary: string | null,
+    deficiencyKey: string | null
+  ): string[] => {
+    const deficiencyLabel = deficiencyKey ? elementLabels[deficiencyKey] : null;
+
+    const primaryLine = primary ? `현재 핵심 기운은 ${primary}입니다.` : "";
+    const balanceLine = deficiencyLabel
+      ? `균형을 위해서는 ‘${deficiencyLabel}’ 기운을 조금 더 보완하는 흐름이 좋아요.`
+      : "오행의 균형을 조금만 조절하면 컨디션과 선택이 더 안정됩니다.";
+
+    const moneySeed = summary?.money_work ? summary.money_work : "";
+    const relSeed = summary?.relationships ? summary.relationships : "";
+    const healthSeed = summary?.health ? summary.health : "";
+
+    return [
+      "어릴 때는 크게 튀기보다 상황을 읽고 자신의 기준을 만들려는 쪽에 가까웠을 가능성이 큽니다.",
+      personalitySeed
+        ? `성향으로 보면, ${personalitySeed.replace(/\.$/, "")} 쪽으로 자연스럽게 흐릅니다.`
+        : "성향으로 보면, ‘기준을 세운 뒤 움직이는 타입’에 가깝습니다.",
+      primaryLine,
+      moneySeed
+        ? `일과 돈의 흐름은 ${moneySeed.replace(/\.$/, "")} 쪽에서 힌트를 얻을 수 있어요.`
+        : "일과 돈은 ‘지속 가능한 루틴’에서 성과가 쌓입니다.",
+      relSeed
+        ? `관계에서는 ${relSeed.replace(/\.$/, "")} 점이 반복 패턴이 되기 쉬워요.`
+        : "관계에서는 솔직함과 거리 조절의 균형이 핵심입니다.",
+      healthSeed
+        ? `컨디션은 ${healthSeed.replace(/\.$/, "")} 부분을 먼저 다듬으면 좋아요.`
+        : "컨디션은 수면 리듬과 회복 루틴이 키입니다.",
+      balanceLine,
+      "지금은 ‘완벽한 답’보다 작은 실행으로 방향을 확인할 때 흐름이 더 빨라집니다.",
+    ].filter(Boolean);
+  };
 
   const fetchWithTimeout = async (
     input: RequestInfo,
@@ -642,13 +725,50 @@ export default function Home() {
   useEffect(() => {
     if (!isModalOpen) {
       document.body.style.overflow = "";
+      lastFocusedElementRef.current?.focus?.();
       return;
     }
 
     document.body.style.overflow = "hidden";
     modalRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeTenGodModal();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const root = modalRef.current;
+      if (!root) return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute("disabled") && !el.getAttribute("aria-hidden"));
+
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey) {
+        if (document.activeElement === first || document.activeElement === root) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isModalOpen]);
 
@@ -688,6 +808,77 @@ export default function Home() {
     : [deficiencyLabel];
   const balanceHint = `${deficiencyLabels.join("·")} 기운 보완 필요`;
 
+  const birthYear = (() => {
+    const raw = original?.birth_date;
+    if (!raw) return null;
+    const year = Number(raw.slice(0, 4));
+    return Number.isFinite(year) ? year : null;
+  })();
+  const currentAge = birthYear ? new Date().getFullYear() - birthYear : null;
+
+  const luckSegments = [
+    {
+      age: "0~9세",
+      start: 0,
+      end: 9,
+      pillar: "甲子",
+      note: "기반을 다지는 시기",
+      story:
+        "환경의 영향을 크게 받는 시기입니다. 안정감과 루틴이 만들어지면 이후 선택이 흔들리지 않아요.",
+    },
+    {
+      age: "10~19세",
+      start: 10,
+      end: 19,
+      pillar: "乙丑",
+      note: "탐색과 경험 축적",
+      story:
+        "관심사가 넓어지고 ‘나만의 기준’을 만들기 시작합니다. 비교보다 경험을 쌓을수록 강점이 선명해집니다.",
+    },
+    {
+      age: "20~29세",
+      start: 20,
+      end: 29,
+      pillar: "丙寅",
+      note: "성장과 확장이 두드러짐",
+      story:
+        "속도와 확장이 함께 들어오는 구간입니다. 기회를 좇되, 마감/컨디션 기준을 고정하면 성과가 커집니다.",
+    },
+    {
+      age: "30~39세",
+      start: 30,
+      end: 39,
+      pillar: "丁卯",
+      note: "안정과 기반 형성",
+      story:
+        "역량을 ‘구조’로 바꾸는 시기입니다. 루틴, 관계, 돈의 흐름을 정리해두면 불필요한 소모가 크게 줄어요.",
+    },
+    {
+      age: "40~49세",
+      start: 40,
+      end: 49,
+      pillar: "戊辰",
+      note: "내실을 다지는 시기",
+      story:
+        "확장보다 내실에 강점이 생깁니다. 선택의 폭을 줄이고, ‘잘하는 것’에 집중할수록 안정성이 올라갑니다.",
+    },
+  ] as const;
+
+  const inferActiveLuckAge = () => {
+    if (currentAge == null) return luckSegments[2].age;
+    const found = luckSegments.find((seg) => currentAge >= seg.start && currentAge <= seg.end);
+    return found?.age ?? luckSegments[luckSegments.length - 1].age;
+  };
+
+  const activeLuckAge = inferActiveLuckAge();
+
+  useEffect(() => {
+    if (!result) return;
+    setSelectedLuckAge((prev) => prev ?? activeLuckAge);
+    // result/original이 바뀔 때 1회 기본 선택
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, original]);
+
   const dayStem = original?.pillars.day?.stem;
   const pillarStems = original
     ? [
@@ -708,6 +899,9 @@ export default function Home() {
   const tenGodTags: TenGodTag[] = dayStem
     ? Array.from(new Set(pillarStems.map((stem) => getTenGod(dayStem, stem))))
         .filter((term) => Boolean(tenGodDetails[term]))
+        // 표시 우선순위: 사주 내 빈도 높은 십성 우선
+        .sort((a, b) => (tenGodCounts[b] ?? 0) - (tenGodCounts[a] ?? 0))
+        .slice(0, 4)
         .map((term) => {
           const base = tenGodEducation.find((item) => item.term === term);
           const count = tenGodCounts[term] ?? 0;
@@ -886,6 +1080,12 @@ export default function Home() {
 
       {error && <div className="notice">{error}</div>}
 
+      {toastMessage && (
+        <div className="toast" role="status" aria-live="polite">
+          {toastMessage}
+        </div>
+      )}
+
       {!result && (
         <div className="notice">
           정보를 입력한 후 &quot;무료 분석하기&quot; 버튼을 눌러주세요.
@@ -908,22 +1108,36 @@ export default function Home() {
 
           {activeView === "analysis" && (
             <>
-              <div className="report-header">
-                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <div className="profile">◎</div>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>
-                      {original?.name ?? "이름 미입력"}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#636e72" }}>
-                      {original?.birth_date ?? "YYYY年 MM月 DD日"} ·{" "}
-                      {original?.birth_time ?? "時柱未詳"}
-                    </div>
+              <div className="result-topbar" role="region" aria-label="프로필 요약">
+                <div className="result-topbar-left">
+                  <div className="result-avatar" aria-hidden="true">
+                    ◎
+                  </div>
+                  <div className="result-topbar-text">
+                    <div className="result-name">{original?.name ?? "이름 미입력"}</div>
+                    <div className="result-meta">{formatBirthInfo()}</div>
                   </div>
                 </div>
-                <button type="button" className="tab">
-                  i
-                </button>
+                <div className="result-topbar-actions">
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={handleShare}
+                    aria-label="결과 공유"
+                    title="공유"
+                  >
+                    공유
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={handleReInput}
+                    aria-label="정보 다시 입력"
+                    title="다시 입력"
+                  >
+                    ↺
+                  </button>
+                </div>
               </div>
 
               {originalError && <div className="notice">{originalError}</div>}
@@ -966,14 +1180,22 @@ export default function Home() {
                 })}
               </div>
 
-              <div className="element-chips">
-                <span className="element-chip">목 {elementCounts.wood}</span>
-                <span className="element-chip">화 {elementCounts.fire}</span>
-                <span className="element-chip">토 {elementCounts.earth}</span>
-                <span className="element-chip">금 {elementCounts.metal}</span>
-                <span className="element-chip">수 {elementCounts.water}</span>
+              <div className="element-balance-row" aria-label="오행과 균형 상태">
+                <div className="element-inline" aria-label="오행 카운트">
+                  <span>목 {elementCounts.wood}</span>
+                  <span className="dot">·</span>
+                  <span>화 {elementCounts.fire}</span>
+                  <span className="dot">·</span>
+                  <span>토 {elementCounts.earth}</span>
+                  <span className="dot">·</span>
+                  <span>금 {elementCounts.metal}</span>
+                  <span className="dot">·</span>
+                  <span>수 {elementCounts.water}</span>
+                </div>
+                <div className="balance-badge" role="status">
+                  균형 상태: {balanceHint}
+                </div>
               </div>
-              <div className="balance-text">⚖ 균형 상태: {balanceHint}</div>
 
               {primaryTenGod && (
                 <div className="summary-focus">
@@ -1028,6 +1250,85 @@ export default function Home() {
                   </button>
                 ))}
               </div>
+
+              <section className="story-section" aria-label="당신의 사주 이야기">
+                <div className="story-header">
+                  <h3>당신의 사주 이야기</h3>
+                  <button
+                    type="button"
+                    className="ghost-btn"
+                    onClick={() => setStoryExpanded((prev) => !prev)}
+                    aria-expanded={storyExpanded}
+                  >
+                    {storyExpanded ? "접기" : "자세히 보기"}
+                  </button>
+                </div>
+
+                <div className="story-body">
+                  {buildStoryLines(
+                    result.summary,
+                    personalityLines?.[0] ?? null,
+                    primaryTenGod ?? null,
+                    result.element_score?.top_deficiencies?.[0] ?? null
+                  )
+                    .slice(0, storyExpanded ? 999 : 8)
+                    .map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
+                </div>
+              </section>
+
+              <section className="guide-grid" aria-label="생활 가이드">
+                {(
+                  result
+                    ? [
+                        {
+                          title: "핵심 성향",
+                          body: personalityLines?.[0]
+                            ? `${personalityLines[0]}\n오늘은 강점이 과열되지 않게 ‘속도 조절’만 의식해 보세요.`
+                            : "기준을 세운 뒤 움직일 때 성과가 안정적입니다.\n오늘은 우선순위 1개만 확정해보세요.",
+                        },
+                        {
+                          title: "돈 / 일",
+                          body: result.summary?.money_work
+                            ? `${result.summary.money_work}\n결정 전에 ‘마감·리스크·기대효과’ 3가지만 체크하세요.`
+                            : "성과는 루틴에서 커집니다.\n오늘은 완료 1개를 작게 잡아 끝내보세요.",
+                        },
+                        {
+                          title: "관계",
+                          body: result.summary?.relationships
+                            ? `${result.summary.relationships}\n말하기 전에 의도를 한 줄 덧붙이면 오해가 줄어요.`
+                            : "관계는 선명한 기준과 따뜻한 표현이 함께일 때 좋아집니다.\n감사 메시지 1개를 보내보세요.",
+                        },
+                        {
+                          title: "건강 / 컨디션",
+                          body: result.summary?.health
+                            ? `${result.summary.health}\n짧은 회복 루틴(스트레칭 3분)을 고정해보세요.`
+                            : "컨디션은 수면 리듬이 좌우합니다.\n잠들기 30분 전 화면 밝기를 줄여보세요.",
+                        },
+                        {
+                          title: "휴식 / 회복",
+                          body: "몰입이 강할수록 회복이 늦어지기 쉽습니다.\n일정에 ‘휴식 슬롯’을 먼저 넣고 나머지를 채워보세요.",
+                        },
+                        {
+                          title: "표현 / 소통",
+                          body: "생각을 정리해 짧게 던질 때 기회가 열립니다.\n오늘 핵심 메시지 1개를 2문장으로 정리하세요.",
+                        },
+                        {
+                          title: "유연성 / 변화",
+                          body: "변화를 ‘큰 결단’이 아니라 ‘작은 실험’으로 바꾸면 부담이 줄어요.\n오늘 10분짜리 실험을 1개만 해보세요.",
+                        },
+                      ]
+                    : []
+                ).map((card) => (
+                  <article key={card.title} className="guide-card">
+                    <h4>{card.title}</h4>
+                    {card.body.split("\n").map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
+                  </article>
+                ))}
+              </section>
 
               {result.accuracy_note && (
                 <div className="notice">{result.accuracy_note}</div>
@@ -1095,23 +1396,55 @@ export default function Home() {
                   현재 구간은 강조 표시됩니다.
                 </p>
                 <div className="luck-bar">
-                  {[
-                    { age: "0~9세", pillar: "甲子", active: false, note: "기반을 다지는 시기" },
-                    { age: "10~19세", pillar: "乙丑", active: false, note: "탐색과 경험 축적" },
-                    { age: "20~29세", pillar: "丙寅", active: true, note: "성장과 확장이 두드러짐" },
-                    { age: "30~39세", pillar: "丁卯", active: false, note: "안정과 기반 형성" },
-                    { age: "40~49세", pillar: "戊辰", active: false, note: "내실을 다지는 시기" },
-                  ].map((item) => (
-                    <div
-                      key={item.age}
-                      className={`luck-card ${item.active ? "active" : ""}`}
-                    >
-                      <div className="pillar-meta">{item.age}</div>
-                      <div style={{ fontSize: 22, fontWeight: 700 }}>{item.pillar}</div>
-                      <div className="pillar-meta">{item.note}</div>
-                    </div>
-                  ))}
+                  {luckSegments.map((item) => {
+                    const isCurrent = item.age === activeLuckAge;
+                    const isSelected = item.age === selectedLuckAge;
+                    return (
+                      <button
+                        key={item.age}
+                        type="button"
+                        className={`luck-card ${isCurrent ? "active" : ""} ${isSelected ? "selected" : ""}`}
+                        onClick={() =>
+                          setSelectedLuckAge((prev) => (prev === item.age ? null : item.age))
+                        }
+                        aria-pressed={isSelected}
+                        aria-label={`${item.age} 인생 흐름 보기`}
+                      >
+                        <div className="pillar-meta">{item.age}</div>
+                        <div style={{ fontSize: 22, fontWeight: 800 }}>{item.pillar}</div>
+                        <div className="pillar-meta">{item.note}</div>
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {selectedLuckAge && (
+                  <div className="luck-detail" role="region" aria-label="선택한 시기 해석">
+                    {(() => {
+                      const seg = luckSegments.find((s) => s.age === selectedLuckAge);
+                      if (!seg) return null;
+                      return (
+                        <>
+                          <div className="luck-detail-title">
+                            {seg.age} · {seg.note}
+                          </div>
+                          <div className="luck-detail-body">{seg.story}</div>
+                          <div className="luck-detail-foot">
+                            {currentAge != null ? (
+                              <span>
+                                현재 나이 추정: {currentAge}세 (생년 기준)
+                              </span>
+                            ) : (
+                              <span>
+                                현재 구간은 생년 정보가 없으면 기본값으로 표시됩니다.
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
 
               <div className="section" style={{ marginTop: 18 }}>
@@ -1219,29 +1552,80 @@ export default function Home() {
               </button>
             </div>
             <div className="modal-body">
-              <div className="modal-highlight">{tenGodInsight}</div>
-              <p>{selectedTenGodDetail.profile}</p>
-              <div>
-                <strong>강점</strong>
-                <ul>
-                  {selectedTenGodDetail.strengths.map((point) => (
-                    <li key={point}>✔ {point}</li>
-                  ))}
-                </ul>
+              <div className="tg-modal-hero">
+                <div className="tg-modal-hero-title">한 줄 핵심 요약</div>
+                <div className="tg-modal-hero-text">{tenGodInsight}</div>
               </div>
-              <div>
-                <strong>리스크 / 관리 포인트</strong>
-                <ul>
-                  {selectedTenGodDetail.risks.map((point) => (
-                    <li key={point}>• {point}</li>
+
+              <div className="tg-modal-traits">
+                <div className="tg-modal-section-title">핵심 특성</div>
+                <div className="tg-trait-chips" role="list">
+                  {(
+                    selectedTenGodDetail.strengths
+                      .slice(0, 3)
+                      .map((text) => text.replace(/^\s*[✔•-]\s*/g, ""))
+                  ).map((trait) => (
+                    <span key={trait} className="tg-trait-chip" role="listitem">
+                      {trait}
+                    </span>
                   ))}
-                </ul>
+                </div>
               </div>
-              <p>대인관계 스타일: {selectedTenGodDetail.relationship}</p>
-              <p>돈 / 일 패턴: {selectedTenGodDetail.moneyWork}</p>
-              <p>스트레스 반응: {selectedTenGodDetail.stress}</p>
-              <p>성장 전략: {selectedTenGodDetail.growth}</p>
-              <p>즉시 실행 행동: {selectedTenGodDetail.action}</p>
+
+              <div className="tg-modal-grid">
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">강점</div>
+                  <ul className="tg-modal-list">
+                    {selectedTenGodDetail.strengths.slice(0, 3).map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">리스크 / 주의점</div>
+                  <ul className="tg-modal-list">
+                    {selectedTenGodDetail.risks.slice(0, 3).map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">관계 스타일</div>
+                  <div className="tg-modal-card-text">
+                    {selectedTenGodDetail.relationship}
+                  </div>
+                </section>
+
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">일 / 돈 패턴</div>
+                  <div className="tg-modal-card-text">
+                    {selectedTenGodDetail.moneyWork}
+                  </div>
+                </section>
+
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">스트레스 반응</div>
+                  <div className="tg-modal-card-text">
+                    {selectedTenGodDetail.stress}
+                  </div>
+                </section>
+
+                <section className="tg-modal-card">
+                  <div className="tg-modal-card-title">성장 전략</div>
+                  <div className="tg-modal-card-text">
+                    {selectedTenGodDetail.growth}
+                  </div>
+                </section>
+
+                <section className="tg-modal-card tg-modal-action">
+                  <div className="tg-modal-card-title">오늘 실행 팁</div>
+                  <div className="tg-modal-card-text">
+                    {selectedTenGodDetail.action}
+                  </div>
+                </section>
+              </div>
             </div>
           </div>
         </div>
