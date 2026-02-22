@@ -273,10 +273,12 @@ def calculate_month_pillars_policy_c(
         return [pillar_for_month_index(month_index)], False
 
     if not has_boundary:
-        # 경계가 없는 날이면 단일 후보
-        month_index = birth_date.month
-        # TODO: 경계 없는 날의 절기월 판정(가장 최근 중기 추적)은 후속으로 개선
-        month_index = ((month_index - 1) % 12) + 1
+        # 경계가 없는 날이면 단일 후보.
+        # 시간 미상이라도 '그 날짜 안'에서 절기월이 바뀌지 않는다는 뜻이므로,
+        # 양력 월 기반이 아니라 '가장 최근 중기'를 추적해 절기월을 확정합니다.
+        # (의존성 누락 등으로 중기 추적이 불가능하면 내부 함수에서 폴백 처리)
+        dt_kst = datetime(birth_date.year, birth_date.month, birth_date.day, 23, 59, 59)
+        month_index = _solar_term_month_index_for_kst_datetime(dt_kst)
         return [pillar_for_month_index(month_index)], False
 
     # 경계가 있는 날 + 시간 미상: 후보 2개(경계 전/후)

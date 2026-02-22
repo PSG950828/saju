@@ -1,6 +1,6 @@
 from datetime import date
 
-from app.saju import build_original_result
+from backend.app.saju import build_original_result
 
 
 def test_build_original_with_unknown_time():

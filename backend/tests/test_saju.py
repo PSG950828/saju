@@ -1,6 +1,6 @@
 from datetime import date
 
-from app.saju import analyze, calculate_chart, calculate_elements
+from backend.app.saju import analyze, calculate_chart, calculate_elements
 
 
 def test_calculate_chart_without_time():

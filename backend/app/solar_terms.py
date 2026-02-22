@@ -319,12 +319,15 @@ def find_last_junggi_before_kst(
 ) -> Optional[SolarTermCrossing]:
     """주어진 KST 시각 이전의 가장 최근 '중기(30°)' 경계를 찾습니다."""
 
+    if dt_kst.tzinfo is None:
+        dt_kst = dt_kst.replace(tzinfo=KST)
+
     last = find_last_crossing_before_kst(dt_kst, lookback_days=lookback_days)
     if not last:
         return None
 
     # 더 이전까지 스캔해 중기만 걸러서 최대를 고른다.
-    end_utc = (dt_kst.replace(tzinfo=KST) if dt_kst.tzinfo is None else dt_kst).astimezone(utc)
+    end_utc = dt_kst.astimezone(utc)
     start_utc = (dt_kst - timedelta(days=lookback_days)).astimezone(utc)
     xs = find_crossings_in_utc_window(start_utc, end_utc, step_minutes=60)
     xs = filter_junggi_crossings([x for x in xs if x.when_kst <= dt_kst])
