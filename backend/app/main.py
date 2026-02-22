@@ -6,8 +6,23 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.saju import analyze, build_original_result, calculate_month_pillars_policy_c, _year_index
-from app.schemas import AnalysisResponse, Chart, ChartInput, OriginalInput, OriginalResponse, Pillar
+"""FastAPI app.
+
+Deployment note:
+- When running from within `backend/` we import from the top-level package `app.*`.
+- When running from repository root we import from `backend.app.*`.
+This small compatibility shim allows both deployment styles without requiring
+environment-specific PYTHONPATH tweaks.
+"""
+
+try:
+    from app.saju import analyze, build_original_result, calculate_month_pillars_policy_c, _year_index
+    from app.solar_terms import find_junggi_crossings_for_kst_date
+    from app.schemas import AnalysisResponse, Chart, ChartInput, OriginalInput, OriginalResponse, Pillar
+except ModuleNotFoundError:  # pragma: no cover
+    from backend.app.saju import analyze, build_original_result, calculate_month_pillars_policy_c, _year_index
+    from backend.app.solar_terms import find_junggi_crossings_for_kst_date
+    from backend.app.schemas import AnalysisResponse, Chart, ChartInput, OriginalInput, OriginalResponse, Pillar
 
 app = FastAPI(title="Saju Energy API", version="0.1.0")
 
@@ -22,7 +37,22 @@ app.add_middleware(
 
 @app.get("/health")
 async def health() -> dict:
-    return {"status": "ok"}
+    solar_terms_ready = True
+    solar_terms_warning = None
+    try:
+        # 절기(중기) 엔진이 실제로 사용 가능한지 빠르게 확인합니다.
+        # - skyfield가 없거나(deps 누락)
+        # - de421.bsp 로드가 실패하는 경우
+        # 여기서 예외가 발생할 수 있습니다.
+        _ = find_junggi_crossings_for_kst_date(datetime.utcnow().date())
+    except Exception as exc:  # pragma: no cover
+        solar_terms_ready = False
+        solar_terms_warning = f"solar_terms_unavailable: {type(exc).__name__}: {exc}"
+
+    payload = {"status": "ok", "solar_terms_ready": solar_terms_ready}
+    if solar_terms_warning:
+        payload["warning"] = solar_terms_warning
+    return payload
 
 
 @app.post("/api/analysis", response_model=AnalysisResponse)

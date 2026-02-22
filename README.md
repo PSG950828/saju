@@ -26,8 +26,43 @@
 
 - `NEXT_PUBLIC_API_BASE` : 백엔드 주소 (기본값: http://localhost:8000)
 
+## 배포(Render) 가이드
+
+이 레포는 **두 가지 배포 방식(레포 루트 기준 / `backend/` 기준)** 을 모두 지원합니다.
+
+### 공통: 의존성 설치
+
+- 루트에 `requirements.txt`가 있고, 내부에서 `backend/requirements.txt`를 include 합니다.
+- 따라서 Render가 어느 경로에서 `pip install -r requirements.txt`를 실행하든 백엔드 의존성이 설치됩니다.
+
+### 방식 A) Root Directory = `backend/`
+
+- Build Command 예시
+	- `pip install -r requirements.txt`
+- Start Command 예시
+	- `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+### 방식 B) Root Directory = 레포 루트
+
+- Build Command 예시
+	- `pip install -r requirements.txt`
+- Start Command 예시
+	- `uvicorn backend_main:app --host 0.0.0.0 --port $PORT`
+
+### /health로 절기(중기) 엔진 상태 확인
+
+절기(중기) 계산은 `skyfield + de421.bsp`를 사용합니다.
+
+- `/health` 응답에 `solar_terms_ready`가 포함됩니다.
+	- `true`: 절기 엔진 정상 사용 중
+	- `false`: 절기 엔진이 사용 불가하여 **간이 규칙(양력 월 기반)으로 폴백** 중
+
+폴백 시에는 `/api/analysis` 응답의 `accuracy_note`에도 경고가 포함됩니다.
+
 ## 참고 사항
 
-- 월주/절기 계산은 간이 규칙을 적용했습니다. (정밀 절기 계산은 Phase 2에서 보완)
+- 기본은 전통 만세력 정합을 위해 절기(중기) 기반 로직을 사용합니다.
+- 단, 배포 환경에서 `skyfield` 또는 `de421.bsp`가 누락되거나 로드에 실패하면 서버는 계속 동작하되
+	월주 계산은 간이 규칙(양력 월 기반)으로 폴백합니다. (정확도 경고는 `accuracy_note` 및 `/health`로 노출)
 - 음력 변환은 아직 지원하지 않습니다. (Phase 2에서 보완)
 - PWA 아이콘은 placeholder 경로입니다. `frontend/public`에 아이콘을 추가하세요.

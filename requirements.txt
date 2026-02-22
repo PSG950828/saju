@@ -1,0 +1,3 @@
+# Root-level requirements for deployments that run from repository root.
+# Keep this in sync with backend/requirements.txt.
+-r backend/requirements.txt

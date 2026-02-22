@@ -194,11 +194,19 @@ def _solar_term_month_index_for_kst_datetime(dt_kst: datetime) -> int:
 
         dt_kst = dt_kst.replace(tzinfo=KST)
 
-    crossings = find_junggi_crossings_for_kst_date(dt_kst.date())
+    # 절기(중기) 엔진이 사용 불가한 환경(의존성 누락, ephemeris 로드 실패 등)에서도
+    # 서버가 죽지 않도록 '간이 규칙(양력 월 기반)'으로 폴백합니다.
+    try:
+        crossings = find_junggi_crossings_for_kst_date(dt_kst.date())
+    except Exception:
+        return ((dt_kst.month - 1) % 12) + 1
     crossings = sorted(crossings, key=lambda c: c.when_kst)
 
     if not crossings:
-        last = find_last_junggi_before_kst(dt_kst)
+        try:
+            last = find_last_junggi_before_kst(dt_kst)
+        except Exception:
+            return ((dt_kst.month - 1) % 12) + 1
         if not last:
             # de421 범위 밖 등 예외 케이스: 최후의 폴백
             return ((dt_kst.month - 1) % 12) + 1
@@ -244,7 +252,12 @@ def calculate_month_pillars_policy_c(
         # 타임존 확장은 후속으로 진행.
         pass
 
-    crossings = find_junggi_crossings_for_kst_date(birth_date)
+    # 절기(중기) 엔진이 사용 불가한 환경(의존성 누락, ephemeris 로드 실패 등)에서도
+    # 서버가 죽지 않도록 정책 C 로직 역시 안전하게 폴백합니다.
+    try:
+        crossings = find_junggi_crossings_for_kst_date(birth_date)
+    except Exception:
+        crossings = []
     has_boundary = len(crossings) > 0
 
     # birth_time이 있으면 단일 시각으로 절기월 판정
@@ -462,6 +475,15 @@ def analyze(
     timezone: str = "Asia/Seoul",
 ) -> AnalysisResult:
     timezone, tz_warn = _normalize_timezone(timezone)
+
+    solar_warn: Optional[str] = None
+    try:
+        # 절기 엔진이 실사용 가능한지 빠르게 체크합니다.
+        # (skyfield/de421 누락 시 예외가 나며, 서비스는 폴백으로 계속 동작)
+        _ = find_junggi_crossings_for_kst_date(birth_date)
+    except Exception:
+        solar_warn = "절기(중기) 계산 엔진 사용 불가로 간이 규칙(양력 월 기반)으로 폴백했습니다"
+
     chart = calculate_chart(
         birth_date,
         birth_time,
@@ -486,6 +508,8 @@ def analyze(
     notes: List[str] = []
     if tz_warn:
         notes.append(tz_warn)
+    if solar_warn:
+        notes.append(solar_warn)
     if not birth_time:
         notes.append("출생시간 미입력으로 시주가 제외되어 분석 정확도가 낮아질 수 있음")
     accuracy_note = " / ".join(notes) if notes else None

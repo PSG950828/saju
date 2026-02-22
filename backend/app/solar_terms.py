@@ -15,11 +15,25 @@ from datetime import date, datetime, timedelta
 from functools import lru_cache
 from typing import Iterable, List, Optional
 
-from skyfield.api import Loader, load
-from skyfield.framelib import ecliptic_frame
 from datetime import timezone
 
-from skyfield.api import utc
+try:
+    from skyfield.api import Loader, load
+    from skyfield.api import utc
+    from skyfield.framelib import ecliptic_frame
+
+    SKYFIELD_AVAILABLE = True
+except ModuleNotFoundError:  # pragma: no cover
+    # 배포/런타임 환경에서 skyfield가 누락되어도 서버가 부팅은 되도록 합니다.
+    # (절기 기반 월주 계산은 호출 시 예외를 발생시키고, 상위에서 폴백 처리)
+    Loader = object  # type: ignore
+    load = None  # type: ignore
+    utc = None  # type: ignore
+    ecliptic_frame = None  # type: ignore
+    SKYFIELD_AVAILABLE = False
+
+# NOTE: skyfield가 없는 환경에서도 타입체커가 깨지지 않도록 Loader를 타입 별칭으로 둡니다.
+_LoaderType = Loader  # type: ignore
 
 KST = timezone(timedelta(hours=9))
 
@@ -101,19 +115,25 @@ def _to_kst(dt_utc: datetime) -> datetime:
 
 
 @lru_cache(maxsize=1)
-def _skyfield_loader() -> Loader:
+def _skyfield_loader() -> _LoaderType:
+    if not SKYFIELD_AVAILABLE:  # pragma: no cover
+        raise RuntimeError("skyfield is not installed")
     # backend/ 실행 기준 캐시 디렉토리
     return load
 
 
 @lru_cache(maxsize=1)
 def _ephemeris():
+    if not SKYFIELD_AVAILABLE:  # pragma: no cover
+        raise RuntimeError("skyfield is not installed")
     # 1899~2053 범위(de421)
     return _skyfield_loader()("de421.bsp")
 
 
 @lru_cache(maxsize=1)
 def _timescale():
+    if not SKYFIELD_AVAILABLE:  # pragma: no cover
+        raise RuntimeError("skyfield is not installed")
     return _skyfield_loader().timescale()
 
 
