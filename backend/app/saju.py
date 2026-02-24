@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Tuple
 from .solar_terms import (
     find_junggi_crossings_for_kst_date,
     find_last_junggi_before_kst,
+    find_last_crossing_before_kst,
 )
 
 STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
@@ -194,39 +195,25 @@ def _solar_term_month_index_for_kst_datetime(dt_kst: datetime) -> int:
 
         dt_kst = dt_kst.replace(tzinfo=KST)
 
-    # 절기(중기) 엔진이 사용 불가한 환경(의존성 누락, ephemeris 로드 실패 등)에서도
-    # 서버가 죽지 않도록 '간이 규칙(양력 월 기반)'으로 폴백합니다.
+    # ⚠️ 주의: '월주=12중기'는 전통적으로도 해석/앱 구현이 갈릴 수 있어,
+    # 실제 사용자 앱 정합을 위해 여기서는 15° 절기(24절기) 기반 절기월을 구한 뒤
+    # 2개씩 묶어 월(寅월=1..丑월=12)을 산출합니다.
+    # - 예: 백로(165°)가 지난 뒤면 같은 30° 구간의 전반/후반 중 후반으로 진입하므로
+    #   앱에서 辛酉로 떨어지는 케이스가 발생합니다.
+
     try:
-        crossings = find_junggi_crossings_for_kst_date(dt_kst.date())
+        last15 = find_last_crossing_before_kst(dt_kst)
     except Exception:
+        last15 = None
+
+    if not last15:
+        # 최후의 폴백(의존성 누락 등)
         return ((dt_kst.month - 1) % 12) + 1
-    crossings = sorted(crossings, key=lambda c: c.when_kst)
 
-    if not crossings:
-        try:
-            last = find_last_junggi_before_kst(dt_kst)
-        except Exception:
-            return ((dt_kst.month - 1) % 12) + 1
-        if not last:
-            # de421 범위 밖 등 예외 케이스: 최후의 폴백
-            return ((dt_kst.month - 1) % 12) + 1
-
-        term_long = last.target_longitude_deg
-        # 12중기 기준: 30° 격자(k*30). 우수 330°를 寅월 시작으로 둡니다.
-        k30 = int(round((term_long % 360.0) / 30.0))
-        month_index = ((k30 - 11) % 12) + 1  # k30=11(330°)=1(寅)
-        return month_index
-
-    boundary = crossings[0].when_kst
-    term_long = crossings[0].target_longitude_deg
-    k30 = int(round((term_long % 360.0) / 30.0))
-    month_index = ((k30 - 11) % 12) + 1
-
-    if dt_kst < boundary:
-        # 경계 이전이면 이전 달로
-        month_index = ((month_index - 2) % 12) + 1
-
-    return month_index
+    k15 = int(round((last15.target_longitude_deg % 360.0) / 15.0))
+    # 입춘(315°=21*15)을 寅월 시작으로 두고, 15° 경계 2개를 한 달로 묶는다.
+    month_index = (((k15 - 21) % 24) // 2) + 1
+    return int(month_index)
 
 
 def calculate_month_pillars_policy_c(
@@ -252,10 +239,13 @@ def calculate_month_pillars_policy_c(
         # 타임존 확장은 후속으로 진행.
         pass
 
-    # 절기(중기) 엔진이 사용 불가한 환경(의존성 누락, ephemeris 로드 실패 등)에서도
+    # 절기 엔진이 사용 불가한 환경(의존성 누락, ephemeris 로드 실패 등)에서도
     # 서버가 죽지 않도록 정책 C 로직 역시 안전하게 폴백합니다.
+    # 정책 C의 경계는 월주 기준과 동일하게 '15° 절기 경계'를 사용합니다.
     try:
-        crossings = find_junggi_crossings_for_kst_date(birth_date)
+        from .solar_terms import find_crossings_for_kst_date
+
+        crossings = find_crossings_for_kst_date(birth_date)
     except Exception:
         crossings = []
     has_boundary = len(crossings) > 0
