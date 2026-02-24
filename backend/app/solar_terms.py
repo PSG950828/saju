@@ -274,11 +274,44 @@ def find_crossings_for_kst_date(target_date: date) -> List[SolarTermCrossing]:
     start_utc = kst_start.astimezone(utc)
     end_utc = kst_end.astimezone(utc)
 
-    return [
+    crossings = [
         c
         for c in find_crossings_in_utc_window(start_utc, end_utc, step_minutes=20)
         if kst_start <= c.when_kst < kst_end
     ]
+
+    # 앱 절입시각 표(override) 우선 적용
+    # - 같은 날짜(target_date) 안에서 같은 deg(0~360) crossing이 있으면 when_kst를 교체
+    # - Skyfield 검색이 누락한 경우라도 override 항목이 있다면 추가
+    try:
+        from .solar_term_overrides import OVERRIDES
+    except Exception:  # pragma: no cover
+        OVERRIDES = {}
+
+    by_deg = {float(c.target_longitude_deg % 360.0): c for c in crossings}
+    for (d, deg), ov in OVERRIDES.items():
+        if d != target_date:
+            continue
+        deg = float(deg % 360.0)
+        if deg in by_deg:
+            base = by_deg[deg]
+            by_deg[deg] = SolarTermCrossing(
+                name=base.name,
+                target_longitude_deg=deg,
+                when_kst=ov.when_kst,
+            )
+        else:
+            # 이름은 고정 매핑에서 가져오되, 없으면 generic
+            name = TERM_NAME_BY_LONGITUDE.get(deg, f"TERM_{deg:.0f}")
+            by_deg[deg] = SolarTermCrossing(
+                name=name,
+                target_longitude_deg=deg,
+                when_kst=ov.when_kst,
+            )
+
+    merged = list(by_deg.values())
+    merged.sort(key=lambda c: c.when_kst)
+    return merged
 
 
 def find_junggi_crossings_for_kst_date(target_date: date) -> List[SolarTermCrossing]:

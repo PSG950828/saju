@@ -216,6 +216,38 @@ def _solar_term_month_index_for_kst_datetime(dt_kst: datetime) -> int:
     return int(month_index)
 
 
+def _junggi_month_index_for_kst_datetime(dt_kst: datetime) -> int:
+    """KST 기준 시각이 속한 '중기(30°)' 기반 월 인덱스(寅월=1)를 반환.
+
+    기준 만세력 앱의 일부 케이스(특히 입춘 절입 직전/직후)에서
+    월주 경계가 15°가 아닌 30° 중기 기준처럼 동작하는 것으로 관측될 수 있습니다.
+    앱 절입시각 표(override)가 존재하는 구간에서는 이 중기 기반 인덱스를 선택해
+    앱과의 정합을 우선합니다.
+    """
+
+    if dt_kst.tzinfo is None:
+        from .solar_terms import KST
+
+        dt_kst = dt_kst.replace(tzinfo=KST)
+
+    try:
+        from .solar_terms import find_last_junggi_before_kst
+
+        last30 = find_last_junggi_before_kst(dt_kst)
+    except Exception:
+        last30 = None
+
+    if not last30:
+        return ((dt_kst.month - 1) % 12) + 1
+
+    k30 = int(round((last30.target_longitude_deg % 360.0) / 30.0))
+    # 입춘(315°)은 중기 격자에 없으므로, 중기 기반에서는 대한(300°) 이후 ~ 우수(330°)를
+    # 寅월로 보도록 300°를 寅월 시작점으로 둔다.
+    # 300°=10*30
+    month_index = ((k30 - 10) % 12) + 1
+    return int(month_index)
+
+
 def calculate_month_pillars_policy_c(
     birth_date: date,
     birth_time: Optional[str],
@@ -255,6 +287,7 @@ def calculate_month_pillars_policy_c(
         branch = BRANCHES[_month_branch_index_from_solar_term_month(month_index_1_to_12)]
         stem = STEMS[_month_stem_index(year_stem_index, month_index_1_to_12)]
         return Pillar(stem=stem, branch=branch)
+
 
     if birth_time:
         hour, minute = [int(x) for x in birth_time.split(":")[:2]]
@@ -353,7 +386,56 @@ def calculate_chart(
         if birth_hour == 23:
             day_date_for_pillar = birth_date + timedelta(days=1)
 
-    year_index = _year_index(birth_date)
+    # 연주(年柱) 산정: '입춘(立春)'을 새해 경계로 보는 만세력 구현이 일반적이며,
+    # 기준 앱 역시 1993-02-04 입춘 절입 전(04:36)에 壬申年으로 표기합니다.
+    # 따라서 birth_time이 주어진 경우, 해당 시각이 '그 해 입춘 시각' 이전이면
+    # 연도를 1년 당겨 연주를 계산합니다.
+    year_date_for_pillar = birth_date
+    if birth_time:
+        try:
+            hh, mm = [int(x) for x in birth_time.split(":")[:2]]
+            dt_kst = datetime(birth_date.year, birth_date.month, birth_date.day, hh, mm)
+            from .solar_terms import KST, find_crossings_for_kst_date, find_last_crossing_before_kst
+
+            dt_kst = dt_kst.replace(tzinfo=KST)
+
+            # 1) 가능한 경우: '그 날짜'에 입춘(315°) crossing이 있으면 그 시각과 비교
+            ipchun_dt = None
+            for c in find_crossings_for_kst_date(birth_date):
+                if abs(float(c.target_longitude_deg % 360.0) - 315.0) < 1e-6:
+                    ipchun_dt = c.when_kst
+                    break
+
+            if ipchun_dt is not None:
+                if dt_kst < ipchun_dt:
+                    year_date_for_pillar = birth_date.replace(year=birth_date.year - 1)
+            else:
+                # 2) 일반적인 날(입춘 crossing이 '오늘'에 없음):
+                #    dt_kst 이전의 가장 최근 입춘(315°) crossing 시각을 찾아,
+                #    그 시각 이전이면 전년, 이후면 당해로 둡니다.
+                probe_dt = dt_kst
+                ipchun_before = None
+                for _ in range(80):
+                    last15 = find_last_crossing_before_kst(probe_dt)
+                    if not last15:
+                        break
+                    last_deg = float(last15.target_longitude_deg % 360.0)
+                    if abs(last_deg - 315.0) < 1e-6:
+                        ipchun_before = last15.when_kst
+                        break
+                    probe_dt = last15.when_kst - timedelta(seconds=1)
+
+                if ipchun_before is None:
+                    # 입춘을 못 찾으면 안전하게 그레고리력 연도를 사용
+                    year_date_for_pillar = birth_date
+                else:
+                    if dt_kst < ipchun_before:
+                        year_date_for_pillar = birth_date.replace(year=birth_date.year - 1)
+        except Exception:
+            # 절기 엔진 불능/파싱 실패 시에는 기존(그레고리력) 연도 기준으로 폴백
+            year_date_for_pillar = birth_date
+
+    year_index = _year_index(year_date_for_pillar)
     year_pillar = _stem_branch_from_index(year_index)
 
     # 절기월 기반 월지(지지)를 계산
