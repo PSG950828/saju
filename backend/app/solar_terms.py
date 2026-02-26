@@ -339,6 +339,31 @@ def find_last_crossing_before_kst(
     end_utc = dt_kst.astimezone(utc)
     start_utc = (dt_kst - timedelta(days=lookback_days)).astimezone(utc)
     xs = find_crossings_in_utc_window(start_utc, end_utc, step_minutes=60)
+
+    # 앱 절입시각 override 우선 적용(override > Skyfield)
+    try:
+        from .solar_term_overrides import get_override
+    except Exception:  # pragma: no cover
+        get_override = None  # type: ignore
+
+    if get_override is not None:
+        adjusted: List[SolarTermCrossing] = []
+        for x in xs:
+            d = x.when_kst.date()
+            deg = float(x.target_longitude_deg % 360.0)
+            ov = get_override(d, deg)
+            if ov is not None:
+                adjusted.append(
+                    SolarTermCrossing(
+                        name=x.name,
+                        target_longitude_deg=deg,
+                        when_kst=ov.when_kst,
+                    )
+                )
+            else:
+                adjusted.append(x)
+        xs = adjusted
+
     xs = [x for x in xs if x.when_kst <= dt_kst]
     if not xs:
         return None
@@ -363,6 +388,31 @@ def find_last_junggi_before_kst(
     end_utc = dt_kst.astimezone(utc)
     start_utc = (dt_kst - timedelta(days=lookback_days)).astimezone(utc)
     xs = find_crossings_in_utc_window(start_utc, end_utc, step_minutes=60)
+
+    # 앱 절입시각 override 우선 적용(override > Skyfield)
+    try:
+        from .solar_term_overrides import get_override
+    except Exception:  # pragma: no cover
+        get_override = None  # type: ignore
+
+    if get_override is not None:
+        adjusted: List[SolarTermCrossing] = []
+        for x in xs:
+            d = x.when_kst.date()
+            deg = float(x.target_longitude_deg % 360.0)
+            ov = get_override(d, deg)
+            if ov is not None:
+                adjusted.append(
+                    SolarTermCrossing(
+                        name=x.name,
+                        target_longitude_deg=deg,
+                        when_kst=ov.when_kst,
+                    )
+                )
+            else:
+                adjusted.append(x)
+        xs = adjusted
+
     xs = filter_junggi_crossings([x for x in xs if x.when_kst <= dt_kst])
     if not xs:
         return None

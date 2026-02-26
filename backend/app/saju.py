@@ -319,9 +319,19 @@ def _stem_branch_from_index(index: int) -> Pillar:
     return Pillar(stem=stem, branch=branch)
 
 
-def _hour_branch_index(hour: int) -> int:
+def _hour_branch_index(hour: int, minute: int = 0) -> int:
+    """시주 지지 인덱스(0=子..11=亥).
+
+    기준 앱 정합을 위해 '정각 경계 포함'을 다음처럼 처리합니다.
+    - 23:00은 子시로 둔다(일주 경계와 일치)
+    - 그 외 홀수시 정각(예: 15:00)은 다음 시각으로 넘기지 않고 직전 2시간 구간에 포함
+      (예: 15:00 -> 未시)
+    """
+
     if hour == 23:
         return 0
+    if minute == 0 and (hour % 2 == 1):
+        hour -= 1
     return ((hour + 1) // 2) % 12
 
 
@@ -460,8 +470,10 @@ def calculate_chart(
 
     hour_pillar: Optional[Pillar] = None
     if birth_time:
-        hour = int(birth_time.split(":")[0])
-        hour_index = _hour_branch_index(hour)
+        parts = birth_time.split(":")
+        hour = int(parts[0])
+        minute = int(parts[1]) if len(parts) > 1 else 0
+        hour_index = _hour_branch_index(hour, minute)
         hour_branch = BRANCHES[hour_index]
         day_stem_index = day_index % 10
         hour_stem = STEMS[_hour_stem_index(day_stem_index, hour_index)]
